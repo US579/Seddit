@@ -1,0 +1,2 @@
+# Seddit
+Reddit's buddy
