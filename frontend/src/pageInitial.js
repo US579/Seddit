@@ -139,14 +139,22 @@ function addlogin(value){
     let br = document.createElement("br");
 
     let input1 = document.createElement("input");
-    input1.id = "username";
+    if (value === "signup-01") {
+        input1.id = "signup-username";
+    }else{
+        input1.id = "login-username";
+    }
     input1.type="text";
     input1.placeholder ="Enter Username";
     input1.name="uname";
     // input1.setAttribute("required","required");
 
     let input2 = document.createElement("input");
-    input2.id = "password";
+    if (value === "signup-01") {
+        input2.id = "signup-password";
+    }else{
+        input2.id = "login-password";
+    }
     input2.type = "password";
     input2.placeholder = "Enter Password";
     input2.name = "psw";
@@ -154,14 +162,17 @@ function addlogin(value){
 
     
     let submit = document.createElement("button");
-    submit.id="submit";
+    if (value === "signup-01") {
+        submit.id="signup_submit";
+    }else{
+        submit.id = "login_submit";
+    }
     submit.className ="submtn";
     submit.type="submit";
     submit.value="Submit";
     submit.innerText = "Submit";
 
     let close = document.createElement("button");
-    // close.setAttribute("onclick","document.getElementById('login-01').style.display='none'")
     if (value === "signup-01") {
         close.id="close2";
     }else{
@@ -176,55 +187,93 @@ function addlogin(value){
     form.appendChild(div2);
     form.appendChild(input2);
     if (value === "signup-01") {
-        let input3 = document.createElement("input");
-        input3.id = "password";
-        input3.type = "password";
-        input3.name = "psw";
-        input3.placeholder = "Renter the password";
-        form.appendChild(input3);
+        form.appendChild(createElement("div","Email",{id:"singup-email"}));
+        form.appendChild(createElement("input", null,{placeholder:"Enter email address",class:"signup-input",id:"signup-email"}));
+        form.appendChild(createElement("div","Name", {id: "singup-name"}));
+        form.appendChild(createElement("input", null, {placeholder: "Enter name",class:"signup-input",id:"signup-name"}));
     }
-    form.appendChild(br);
+    form.appendChild(createElement("br"));
+    form.appendChild(createElement("br"));
     form.appendChild(submit);
     form.appendChild(close);
     var lis = document.getElementById("root");
-    console.log(lis.childNodes[lis.childNodes.length-1]);
     lis.insertBefore(form, lis.childNodes[lis.childNodes.length - 1]);
 
 }
 
 
+export function createFeed(post){
+    return createPostTile(post);
+}
 
-// export function openNew() {
-//     //获取页面的高度和宽度
-//     console.log("asdas");
-//     var sWidth = document.body.scrollWidth;
-//     var sHeight = document.body.scrollHeight;
-//     //获取页面的可视区域高度和宽度
-//     var wHeight = document.documentElement.clientHeight;
-//     var oMask = document.createElement("div");
-//     oMask.id = "mask";
-//     oMask.style.height = sHeight + "px";
-//     oMask.style.width = sWidth + "px";
-//     document.body.appendChild(oMask);
-//     alert("ppp");
-//     var oLogin = document.getElementById("id01");
-//     // oLogin.id = "login";
-//     // oLogin.innertxt= "close";
-//     // oLogin.innertxt = "<div class='loginCon'><div id='close'>close</div></div>";
-//     // document.body.appendChild(oLogin);
 
-//     //获取登陆框的宽和高
-//     var dHeight = oLogin.offsetHeight;
-//     var dWidth = oLogin.offsetWidth;
-//     //设置登陆框的left和top
-//     oLogin.style.left = sWidth / 2 - dWidth / 2 + "px";
-//     oLogin.style.top = wHeight / 2 - dHeight / 2 + "px";
-//     //点击关闭按钮
-//     // var oClose = document.getElementById("close");
 
-//     // //点击登陆框以外的区域也可以关闭登陆框
-//     // oClose.onclick = oMask.onclick = function () {
-//     //     document.body.removeChild(oLogin);
-//     //     document.body.removeChild(oMask);
-//     // };
-// };
+function createPostTile(post) {
+    // time 
+    let postTime = time2time(post.meta.published);
+    // let upvote = createElement("span", post.meta.upvotes.length, { "data-id-upvotes": "", className: "post-upvote" });
+    let section = createElement('section', null, { "data-id-post": "", class: 'post', id: post.id });
+    let post_front_title = createElement("div", null, { class: 'post-front-title' })
+    
+
+    let subreddit = createElement('span', post.meta.subseddit + " • ", { class: 'post-subseddit', style: 'cursor:pointer' });
+    post_front_title.appendChild(subreddit);
+    let postby = createElement('span', "Posted by @ ", { style: "color: rgb(120, 124, 126);", class: "post-by", id: 'post-by' + post.id });
+    post_front_title.appendChild(postby);
+    let auther = createElement('span', post.meta.author, { class: 'post-auther', style: "color: rgb(120, 124, 126);", style: 'cursor:pointer', id: 'post-author-id' + post.id });
+    //转到auther的post
+    // author.addEventListener('click', () => userpost(post.meta.author));
+    
+    post_front_title.appendChild(auther);
+    let time = createElement('h6', postTime, { class: 'post-time', style: "color: rgb(120, 124, 126);" });
+    post_front_title.appendChild(time);
+    section.appendChild(post_front_title);
+
+    section.appendChild(createElement("h5",post.title,{class:"post-title",id:"post-title-id"+post.id}));
+    section.appendChild(createElement("h5",post.text,{class:"post-content",id:"post-content-id"+post.id}));
+
+    if (post.image != null) {
+        section.appendChild(createElement('img', null, { src: 'data:image/png;base64,' + post.image, class: 'post-image', id: 'post-image' + post.id, float: "" }));
+    }
+    const likeicon = createElement('img', null,
+        { src: '/src/icon/up.png', alt: 'Likes', class: 'post-button', style: "cursor:pointer" });
+
+    //增加like计数
+    // likeicon.addEventListener('click', () => tolike(post.id));
+    section.appendChild(likeicon);
+    section.appendChild(createElement('img', null,{ src: '/src/icon/comment.png', alt: 'Comments', class: 'post-button', style: "cursor:pointer" }));
+    section.appendChild(createElement('h6', null, { class: "post-padding" }));
+    section.appendChild(createElement('h6', post.meta.upvotes.length, { "data-id-upvotes": "", class: "post_count_num", id: "likes-num" + post.id }));
+    section.appendChild(createElement('h6', post.comments.length, { class: "post_count_num", id: "comment-num" + post.id }));
+    section.appendChild(createElement('h6', null, { class: "post-padding" }));
+    return section;
+}
+
+
+function commentGenerator(comment){
+
+
+
+
+
+}
+
+
+
+
+function time2time(Time) {
+    const unixTime = new Date(Time * 1000);
+    return unixTime.toLocaleString('en-AU');
+}
+
+
+export function createElement(tag, data, options = {}) {
+    const ele = document.createElement(tag);
+    ele.textContent = data;
+    return Object.entries(options).reduce(
+        (element, [field, value]) => {
+            element.setAttribute(field, value);
+            return element;
+        }, ele);
+}
+

@@ -18,6 +18,7 @@ export function addCloseListener(func,id1,id2){
         var close1 = document.getElementById(id1);
         close1.onclick = () => {
             document.getElementById(id2).style.display = "none";
+            // refresh page
             pgswitch();
         };
     }
@@ -38,7 +39,6 @@ export function addCloseListener(func,id1,id2){
         const dc = document.getElementById('login-01');
         onBut2.onclick = () => {
             if (dc.style.display == "none") {
-                alert("asdas");
                 document.getElementById("signup-01").style.display = "block";
                 pgswitch(1); 
             }
@@ -49,19 +49,9 @@ export function addCloseListener(func,id1,id2){
 export function pgswitch(option = 0) {
     if (option == 1) {
         document.getElementById('feed').style.display = 'none';
-        // let collection = document.getElementsByClassName("post");
-        // console.log(collection);
-        // if (collection.length>0){
-        // document.getElementsByClassName("post").style.display = 'none';
-        // }
-        // document.getElementById('root').innerText = 'Please log in or register, here are some example images:';
     }
     else {
         document.getElementById('feed').style.display = 'block';
-        let collection1 = document.getElementsByClassName("post");
-        // if (collection1.length > 0) {
-        //     document.getElementsByClassName("post").style.display = 'block';
-        // }
     }
 }
 
@@ -103,3 +93,4 @@ function tologin() {
             });
     }
 }
+

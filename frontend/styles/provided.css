@@ -113,6 +113,13 @@ footer {
   margin: 20px auto;
   padding: 0;
 }
+.post {
+    max-width: 640px;
+    overflow: hidden;
+    margin: 30px auto;
+    background-color: white;
+    border: 1px solid rgba(0,0,0,.0975);
+}
 
 .feed-header {
   display: flex;
@@ -127,7 +134,17 @@ footer {
 /* Add your styles here */
 form {border: 3px solid #f1f1f1;}
 
-input[type=text], input[type=password] {
+input[type=text], input[type=password]
+{
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+.signup-input{
   width: 100%;
   padding: 12px 20px;
   margin: 8px 0;
@@ -153,11 +170,6 @@ button:hover {
   background-color: #0079D3;
 }
 
-/* Add padding to containers */
-.container {
-  padding: 16px;
-}
-
 .formloc {   
     background-color: #fff;
     left: 50%;
@@ -167,4 +179,95 @@ button:hover {
     width: 300px;
     height: 300px;
     z-index: 25;
+}
+
+.post-time {
+   display: inline;
+    padding: 10px 40px;
+    margin: 0 auto;
+    font-size: 12px;
+    font-family: Helvetica;
+    color: darkolivegreen;
+}
+
+
+.post {
+    max-width: 640px;
+    margin: 40px auto;
+    background-color: white;
+    border: 1px solid rgba(0,0,0,.0975);
+}
+
+.post-front-title {
+    padding: 20px 40px;
+    margin: 0;
+    border-bottom: 1px solid rgba(0,0,0,.0975);
+}
+
+
+.post-by{
+  font-size: 15px;
+}
+
+.post-subseddit{
+  font-size: 20px;
+
+}
+.post-image {
+  
+ clear: both;
+ display: block;
+ float: right;
+ /* margin:auto; */
+}
+
+.post-upvote{
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+.post-button {
+    display: inline;
+    max-width: 40px;
+    max-height: 40px;
+    padding: 3px 27px;
+    margin: 0 auto;
+}
+
+.post-padding {
+    display: block;
+    padding: 3px;
+    margin: 0 auto;
+}
+
+.post_count_num {
+    display: inline;
+    padding: 8px 38px;
+    margin: 0 auto;
+    font-size: 20px;
+    font-family: Helvetica;
+    color: goldenrod;
+}
+
+.post-title{
+  font: caption;
+  padding: 20px,40px;
+  font-size: 25px;
+  font-weight: bold;
+  padding: 15px;
+  margin: 0%;
+  border-bottom: 1px solid rgba(0,0,0,.0975);
+}
+
+.post-content{
+  font: caption;
+  padding: 20px,40px;
+  font-size: 20px;
+  padding: 30px;
+  margin: 0%;
+  border-bottom: 1px solid rgba(0,0,0,.0975);
 }
