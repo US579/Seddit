@@ -53,6 +53,7 @@ export function addCloseListener(func,id1,id2){
     }
 }
 
+
 export function pgswitch(option = 0) {
     if (option == 1) {
         document.getElementById('feed').style.display = 'none';
@@ -64,75 +65,49 @@ export function pgswitch(option = 0) {
 
 
 
-// sort published 
-export function sortArray(res) {
-    var dic = {};
-    for (let i = 0; i < res.posts.length; ++i) {
-        let published = res.posts[i].meta.published;
-        dic[i] = parseInt(published);
-    }
-    var res2 = Object.keys(dic).sort(function (a, b) { return dic[b] - dic[a]; });
-    return res2;
-}
-
-export function checkLocalStore(key) {
-    if (window.localStorage){
-        // alert('ahahahahh')
-        console.log(window.localStorage.getItem(key));
-        return window.localStorage.getItem(key);
-    }else{
-        return null
-    }
-}
-
-
 
 export function loginToBack() {
     var signup_url = "http://127.0.0.1:5003/auth/login"
-    var submit = document.getElementById("login_submit");
-    // alert("asd")
-    submit.addEventListener("click", (event) => {
-       
-    })
-    submit.onclick = function () {
-        var username = document.getElementById('login-username').value;
-        var password = document.getElementById('login-password').value;
-        if ((!username) || (!password)) {
-            alert('username and password can not be empty');
-            return false;
-        }
-        hidebutton();
-        
-        const user = {
-            "username": username,
-            "password": password
-        };
-        fetch(signup_url, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(user),
-        })
-            .then(res => res.json())
-            .then(function (res) {
-                
-                if (res["token"]) {
-                    console.log(res["token"])
-                    window.alert('You are successfully logged in');
-                    window.localStorage.setItem('username', username);
-                    window.localStorage.setItem('token', res['token']);
-                    // location.reload();
-                   
-                    return true;
-                }
-                if (res.message === 'Invalid Username/Password') {
-                    alert("user and password is not correct")
-                    return false;
-                }
-            })
+    var username = document.getElementById('login-username').value;
+    var password = document.getElementById('login-password').value;
+    if ((!username) || (!password)) {
+        alert('username and password can not be empty');
+        return false;
     }
+   
+    const user = {
+        "username": username,
+        "password": password
+    };
+    fetch(signup_url, {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(user),
+    })
+        .then(res => res.json())
+        .then(function (res) {
+            if (res["token"]) {
+                console.log(res["token"])
+                window.alert('You are successfully logged in');
+                window.localStorage.setItem('username', username);
+                window.localStorage.setItem('id', res.id);
+                window.localStorage.setItem('token', res['token']);
+                hidebutton();
+                // location.reload()
+            }
+            console.log(res.message)
+            if (res.message === "Invalid Username/Password") {
+                alert("user and password is not correct")
+                return false;
+            }
+        })
+        .then(function (res){
+            getUserFeed(checkLocalStore("token"))
+        })
+    
 }
 
 function hidebutton() {
@@ -200,10 +175,72 @@ export function signupToBack() {
 
 
 
+//------------------------------------- display user feed when click My profile button-------------------------------------
 
 
 
 
+
+
+
+
+
+
+
+
+
+//------------------------------------- display user feed when login  (cotains profiles)-------------------------------------
+// getUserProfile(checkLocalStore("token"))
+export async function getUserFeed(token) {
+    var profile_url = "http://127.0.0.1:5003/user/"
+    // var profile_url = "http://127.0.0.1:5003/user/?id=3"
+    await fetch(profile_url, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': 'Token ' + token
+        },
+    })
+        //  .then(alert("asdasdas"))
+        .then(res => res.json())
+        .then(function (res) {
+            console.log(res.id)
+            // console.log(res.following)
+            // console.log(res.following.length)
+            // console.log(res.followed_num)
+            // console.log(res.posts.length)
+            let profile = profileGenerator(res);
+            feed.innerHTML = ""
+            feed.appendChild(profile)
+            fetchUserFeed();
+            
+        })
+}
+
+function fetchUserFeed() {
+    const feed_url = "http://127.0.0.1:5003/user/feed";
+    fetch(feed_url, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': 'Token ' + checkLocalStore('token')
+        }
+    })
+    .then(res => res.json())
+    .then(function (res) {
+        // console.log(res);
+        if (res.posts.length === 0) {
+            feed.appendChild(createElement("div", "Wow,such empty", { class: "empty-feed" }))
+        }
+        for (let i = 0 ; i < res.posts.length ;++i){
+            let content = createPageFeed_init(res.posts[i]);
+            feed.appendChild(content);
+        }
+    })
+}
+//--------------------------------------------------------------------------------------------------
 
 
 
@@ -298,3 +335,106 @@ function commentGenerator(id, comment) {
     }
     return div_comment;
 }
+
+
+
+
+
+
+// sort published 
+export function sortArray(res) {
+    var dic = {};
+    for (let i = 0; i < res.posts.length; ++i) {
+        let published = res.posts[i].meta.published;
+        dic[i] = parseInt(published);
+    }
+    var res2 = Object.keys(dic).sort(function (a, b) { return dic[b] - dic[a]; });
+    return res2;
+}
+
+export function checkLocalStore(key) {
+    if (window.localStorage) {
+        // alert('ahahahahh')
+        console.log(window.localStorage.getItem(key));
+        return window.localStorage.getItem(key);
+    } else {
+        return null
+    }
+}
+
+
+
+
+
+
+
+
+
+
+//------------------------------------- display user post when login -------------------------------------
+// getUserProfile(checkLocalStore("token"))
+export async function getUserPost(token) {
+    var profile_url = "http://127.0.0.1:5003/user/"
+    // var profile_url = "http://127.0.0.1:5003/user/?id=3"
+    await fetch(profile_url, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': 'Token ' + token
+        },
+    })
+        //  .then(alert("asdasdas"))
+        .then(res => res.json())
+        .then(function (res) {
+            console.log(res)
+            let profile = profileGenerator(res);
+            feed.innerHTML = ""
+            feed.appendChild(profile)
+            if (res.following.length === 0) {
+                feed.appendChild(createElement("div", "Wow,such empty", { class: "empty-feed" }))
+            }
+            for (let i = 0; i < res.posts.length; ++i) {
+                // console.log(res.following[i])
+                fetchUserPost(res.posts[i]);
+            }
+        })
+}
+
+function fetchUserPost(id) {
+    const feed_url = "http://127.0.0.1:5003/post/?id=" + id;
+    fetch(feed_url, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': 'Token ' + checkLocalStore('token')
+        }
+    })
+        .then(res => res.json())
+        .then(function (res) {
+            console.log(res);
+            let content = createPageFeed_init(res);
+            console.log(content)
+            console.log(res.meta)
+            document.getElementById("feed").appendChild(content);
+        })
+}
+
+
+
+
+function profileGenerator(res) {
+    let profile = createElement("div", null, { id: "profile-" + res.id, class: "profile" })
+    profile.appendChild(createElement("div", res.name, { class: "profile-name" }))
+    console.log(res.following)
+    profile.appendChild(createElement("b", "Following: " + res.following.length, { class: "profile-following" }))
+    profile.appendChild(createElement("b", "Upvotes: " + res.followed_num, { class: "profile-upvotes" }))
+    profile.appendChild(createElement("b", "Followed: " + res.followed_num, { class: "profile-followed" }))
+    profile.appendChild(createElement("b", "Posts: " + res.posts.length, { class: "profile-posts" }))
+    return profile;
+
+}
+
+//--------------------------------------------------------------------------------------------------
+

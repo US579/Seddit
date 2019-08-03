@@ -230,6 +230,7 @@ export function createFeed(post){
 }
 
 
+
 function createPostTile(post) {
     // time 
     let postTime = time2time(post.meta.published);
@@ -249,7 +250,6 @@ function createPostTile(post) {
     let time = createElement('h6', postTime, { class: 'post-time', style: "color: rgb(120, 124, 126);" });
     post_front_title.appendChild(time);
     section.appendChild(post_front_title);
-
     section.appendChild(createElement("h5",post.title,{class:"post-title",id:"post-title-id"+post.id}));
     section.appendChild(createElement("h5",post.text,{class:"post-content",id:"post-content-id"+post.id}));
 

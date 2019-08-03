@@ -227,11 +227,10 @@ button:hover {
 
 }
 .post-image {
-  
  clear: both;
  display: block;
- float: right;
- /* margin:auto; */
+  width: 580px;
+  height: 580px;
 }
 
 .post-upvote{
@@ -308,7 +307,13 @@ button:hover {
 .profile-followed{
    padding: 15px;
    font-size: 20px;
-   margin: 30px;
+   margin: 20px;
+    font-family: "Lucida Console", Monaco, monospace;
+}
+.profile-upvotes{
+   padding: 15px;
+   font-size: 20px;
+   margin: 25px;
     font-family: "Lucida Console", Monaco, monospace;
 }
 .profile-posts{
@@ -317,3 +322,4 @@ button:hover {
    margin: 10px;
     font-family: "Lucida Console", Monaco, monospace;
 }
+

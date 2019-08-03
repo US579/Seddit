@@ -7,7 +7,7 @@
   border: 1px solid var(--reddit-grey);
 }
 
-.page-feed {
+.page-feed{
   /* display: flex; */
   overflow: hidden;
   margin: 20px 0;
@@ -15,8 +15,16 @@
   border: 1px solid var(--reddit-grey);
 }
 
-
-
+.empty-feed{
+  font: caption;
+  padding: 20px,40px;
+  font-size: 25px;
+  font-weight: bold;
+  padding: 15px;
+  margin: 0%;
+  background-color: white;
+  border-bottom: 1px solid rgba(0,0,0,.0975);
+}
 
 
 .post .vote {

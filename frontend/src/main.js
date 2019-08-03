@@ -25,11 +25,17 @@ function initApp(apiUrl) {
     init.addPost("us579", "us579as");
   })
 
+  // frontfeed show 
+  anonyFeed();
+
+
+
 // login 
-const login = document.getElementById("login_button");
+const login = document.getElementById("login_submit");
 login.addEventListener("click",(event)=>{
-  myModule.loginToBack();
-})
+  myModule.loginToBack()
+  }
+)
 
   
 // signup
@@ -38,9 +44,16 @@ signup.addEventListener("click", (event) => {
     myModule.signupToBack();
   })
 
+const get_post = document.getElementById("my_profile");
+get_post.addEventListener("click",(event)=>{
+  // document.getElementById("feed").style.display="none";
+  myModule.getUserPost(myModule.checkLocalStore("token"));
+})
 
-// frontfeed show 
-anonyFeed();
+  const get_feed= document.getElementById("Home");
+get_feed.addEventListener("click", (event) => {
+    myModule.getUserFeed(myModule.checkLocalStore("token"));
+  })
 
 
 
@@ -88,75 +101,79 @@ anonyFeed();
   // -------------------------------------------------
 
 
-// let login_submit = document.getElementById("login_submit")
 
 
 
-getUserProfile(myModule.checkLocalStore("token"))
-function getUserProfile(token) {
-  var profile_url = "http://127.0.0.1:5003/user/?id=3"
-      fetch(profile_url, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-           'Authorization': 'Token ' + token
-        },
-      })
-      //  .then(alert("asdasdas"))
-        .then(res => res.json())
-        .then(function (res) {
-          console.log(res)
-          console.log(res.following)
-          console.log(res.following.length)
-          console.log(res.followed_num)
-          console.log(res.posts.length)
-          let profile = profileGenerator(res);
-          feed.innerHTML=""
-          feed.appendChild(profile)
-          for (let i = 0 ; i < res.following.length ; ++i){
-            // console.log(res.following[i])
-            fetchUserPost(res.following[i]);
-          }
-        })
-    }
 
 
 
-  function profileGenerator(res){
-      let profile = myModule.createElement("div", null, { id: "profile-" + res.id, class: "profile" })
-          profile.appendChild(myModule.createElement("div", res.name, { class: "profile-name" }))
-          profile.appendChild(myModule.createElement("b", "Following: " + res.following.length, {class:"profile-following"}))
-          profile.appendChild(myModule.createElement("b", "Followed: " + res.followed_num, {class: "profile-followed"}))
-          profile.appendChild(myModule.createElement("b", "Posts: " + res.posts.length, {class: "profile-posts"}))
-        return profile;
-
-  }
 
 
-  function fetchUserPost(id) {
-    const feed_url = "http://127.0.0.1:5003/post/?id="+id;
-    fetch(feed_url, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': 'Token ' + myModule.checkLocalStore('token')
-      }
-    })
-      .then(res => res.json())
-      .then(function (res) {
-        // console.log(res);
-        if (res.length == 0) {
-          console.log(myModule.checkLocalStore('token'))
-          alert("user has not posted anything yet");
-          return false;
-        } else {
-          let content = myModule.createPageFeed_init(res);
-          feed.appendChild(content);
-        }
-      })
-  }
+
+// getUserProfile(myModule.checkLocalStore("token"))
+// function getUserProfile(token) {
+//   var profile_url = "http://127.0.0.1:5003/user/?id=3"
+//       fetch(profile_url, {
+//         method: 'GET',
+//         headers: {
+//           'Accept': 'application/json',
+//           'Content-Type': 'application/json',
+//            'Authorization': 'Token ' + token
+//         },
+//       })
+//       //  .then(alert("asdasdas"))
+//         .then(res => res.json())
+//         .then(function (res) {
+//           // console.log(res)
+//           // console.log(res.following)
+//           // console.log(res.following.length)
+//           // console.log(res.followed_num)
+//           // console.log(res.posts.length)
+//           let profile = profileGenerator(res);
+//           feed.innerHTML=""
+//           feed.appendChild(profile)
+//           for (let i = 0 ; i < res.following.length ; ++i){
+//             // console.log(res.following[i])
+//             fetchUserPost(res.following[i]);
+//           }
+//         })
+//     }
+
+
+//   function profileGenerator(res){
+//       let profile = myModule.createElement("div", null, { id: "profile-" + res.id, class: "profile" })
+//           profile.appendChild(myModule.createElement("div", res.name, { class: "profile-name" }))
+//           profile.appendChild(myModule.createElement("b", "Following: " + res.following.length, {class:"profile-following"}))
+//           profile.appendChild(myModule.createElement("b", "Followed: " + res.followed_num, {class: "profile-followed"}))
+//           profile.appendChild(myModule.createElement("b", "Posts: " + res.posts.length, {class: "profile-posts"}))
+//         return profile;
+
+//   }
+
+//   function fetchUserPost(id) {
+//     const feed_url = "http://127.0.0.1:5003/post/?id="+id;
+//     fetch(feed_url, {
+//       method: 'GET',
+//       headers: {
+//         'Accept': 'application/json',
+//         'Content-Type': 'application/json',
+//         'Authorization': 'Token ' + myModule.checkLocalStore('token')
+//       }
+//     })
+//       .then(res => res.json())
+//       .then(function (res) {
+//         // console.log(res);
+//         if (res.length == 0) {
+//           console.log(myModule.checkLocalStore('token'))
+//           feed.appendChild(createElement("div","Wow,such empty",{id:"nocntent"}))
+//           alert("user has not posted anything yet");
+//           return false;
+//         } else {
+//           let content = myModule.createPageFeed_init(res);
+//           feed.appendChild(content);
+//         }
+//       })
+//   }
 
 
 
