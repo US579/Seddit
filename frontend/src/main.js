@@ -94,7 +94,7 @@ anonyFeed();
 
 getUserProfile(myModule.checkLocalStore("token"))
 function getUserProfile(token) {
-    var profile_url = "http://127.0.0.1:5003/user/"
+  var profile_url = "http://127.0.0.1:5003/user/?id=3"
       fetch(profile_url, {
         method: 'GET',
         headers: {
@@ -107,18 +107,69 @@ function getUserProfile(token) {
         .then(res => res.json())
         .then(function (res) {
           console.log(res)
+          console.log(res.following)
+          console.log(res.following.length)
+          console.log(res.followed_num)
+          console.log(res.posts.length)
+          let profile = profileGenerator(res);
+          feed.innerHTML=""
+          feed.appendChild(profile)
+          for (let i = 0 ; i < res.following.length ; ++i){
+            // console.log(res.following[i])
+            fetchUserPost(res.following[i]);
+          }
         })
     }
 
 
 
+  function profileGenerator(res){
+      let profile = myModule.createElement("div", null, { id: "profile-" + res.id, class: "profile" })
+          profile.appendChild(myModule.createElement("div", res.name, { class: "profile-name" }))
+          profile.appendChild(myModule.createElement("b", "Following: " + res.following.length, {class:"profile-following"}))
+          profile.appendChild(myModule.createElement("b", "Followed: " + res.followed_num, {class: "profile-followed"}))
+          profile.appendChild(myModule.createElement("b", "Posts: " + res.posts.length, {class: "profile-posts"}))
+        return profile;
+
+  }
+
+
+  function fetchUserPost(id) {
+    const feed_url = "http://127.0.0.1:5003/post/?id="+id;
+    fetch(feed_url, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Token ' + myModule.checkLocalStore('token')
+      }
+    })
+      .then(res => res.json())
+      .then(function (res) {
+        // console.log(res);
+        if (res.length == 0) {
+          console.log(myModule.checkLocalStore('token'))
+          alert("user has not posted anything yet");
+          return false;
+        } else {
+          let content = myModule.createPageFeed_init(res);
+          feed.appendChild(content);
+        }
+      })
+  }
 
 
 
 
 
 
-function getUserFeed(username){
+
+
+
+
+
+
+function getUserFeed(id){
   const feed_url = "http://127.0.0.1:5003/user/feed";
   fetch(feed_url, {
     method: 'GET',

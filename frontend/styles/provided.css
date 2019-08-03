@@ -284,3 +284,36 @@ button:hover {
   margin: 0%;
   border-bottom: 1px solid rgba(0,0,0,.0975);
 }
+
+
+.profile {
+  overflow: hidden;
+  padding: 20px;
+  margin: 30px 20px;
+  background-repeat:repeat-x;
+}
+
+
+.profile-name{
+   font-family: Chalkduster;
+   padding-bottom : 35px;
+   font-size: 65px;
+
+}
+
+.profile-following{
+   font-size: 20px;
+    font-family: "Lucida Console", Monaco, monospace;
+}
+.profile-followed{
+   padding: 15px;
+   font-size: 20px;
+   margin: 30px;
+    font-family: "Lucida Console", Monaco, monospace;
+}
+.profile-posts{
+   padding: 15px;
+   font-size: 20px;
+   margin: 10px;
+    font-family: "Lucida Console", Monaco, monospace;
+}
