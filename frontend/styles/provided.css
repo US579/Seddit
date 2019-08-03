@@ -106,6 +106,7 @@ footer {
   list-style-type: none;
 }
 
+
 #feed {
   min-width: 500px;
   max-width: 800px;
@@ -132,6 +133,18 @@ footer {
 }
 
 /* Add your styles here */
+
+.logout-button-class {
+    border: 1px solid var(--reddit-blue);
+    border-radius: 4px;
+    text-transform: uppercase;
+    padding: 7.5px 15px;
+    font-weight: bold;
+    color: #f44336;
+    display: inline;
+}
+
+
 form {border: 3px solid #f1f1f1;}
 
 input[type=text], input[type=password]
@@ -234,7 +247,7 @@ button:hover {
     display: inline;
     max-width: 40px;
     max-height: 40px;
-    padding: 3px 27px;
+    padding: 10px 27px;
     margin: 0 auto;
 }
 

@@ -7,6 +7,15 @@
   border: 1px solid var(--reddit-grey);
 }
 
+.page-feed {
+  /* display: flex; */
+  overflow: hidden;
+  margin: 20px 0;
+  background-color: white;
+  border: 1px solid var(--reddit-grey);
+}
+
+
 .post .vote {
   width: 35px;
   background-color: var(--reddit-light-grey);
@@ -25,4 +34,15 @@
   margin: 5px 0;
   font-size: 12px;
   color: var(--reddit-blue);
+}
+
+.post-comments-div{
+   padding: 30px;
+   border: 1px solid var(--reddit-grey);
+
+
+
+}
+.post-comments-content{
+  font-family: "Lucida Console", Monaco, monospace;
 }

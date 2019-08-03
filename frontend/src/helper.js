@@ -14,7 +14,7 @@ export function is_number(e) {
 // 3 for signup
 export function addCloseListener(func,id1,id2){
     if (func === 1){
-        console.log(id1, " ", id2);
+        // console.log(id1, " ", id2);
         var close1 = document.getElementById(id1);
         close1.onclick = () => {
             document.getElementById(id2).style.display = "none";
@@ -23,24 +23,31 @@ export function addCloseListener(func,id1,id2){
         };
     }
 
-
     if (func === 2){
-        var onBut1 = document.getElementById("bt1");
+        var onBut1 = document.getElementById("login_button");
         const dc1 = document.getElementById('signup-01');
         onBut1.onclick = () => {
             if (dc1.style.display == "none") {
                 document.getElementById("login-01").style.display = "block";
                 pgswitch(1);
-            };
+            }else{
+                dc1.style.display = "none";
+                document.getElementById("login-01").style.display = "block";
+            }
         };
     }
+
     if (func === 3) {
-        var onBut2 = document.getElementById("bt2");
+        var onBut2 = document.getElementById("signup_button");
         const dc = document.getElementById('login-01');
         onBut2.onclick = () => {
             if (dc.style.display == "none") {
                 document.getElementById("signup-01").style.display = "block";
                 pgswitch(1); 
+            }else{
+                dc.style.display = "none";
+                document.getElementById("signup-01").style.display = "block";
+
             }
         };
     }
@@ -55,42 +62,239 @@ export function pgswitch(option = 0) {
     }
 }
 
-function tologin() {
-    const login_2 = document.getElementById('login_button_2');
-    login_2.onclick = function () {
-        const username = document.getElementById('luname').value;
-        const password = document.getElementById('lpass').value;
 
-        if (!username || !password) {
-            window.alert('Empty username or password!');
+
+// sort published 
+export function sortArray(res) {
+    var dic = {};
+    for (let i = 0; i < res.posts.length; ++i) {
+        let published = res.posts[i].meta.published;
+        dic[i] = parseInt(published);
+    }
+    var res2 = Object.keys(dic).sort(function (a, b) { return dic[b] - dic[a]; });
+    return res2;
+}
+
+export function checkLocalStore(key) {
+    if (window.localStorage){
+        // alert('ahahahahh')
+        console.log(window.localStorage.getItem(key));
+        return window.localStorage.getItem(key);
+    }else{
+        return null
+    }
+}
+
+
+
+export function loginToBack() {
+    var signup_url = "http://127.0.0.1:5003/auth/login"
+    var submit = document.getElementById("login_submit");
+    // alert("asd")
+    submit.addEventListener("click", (event) => {
+       
+    })
+    submit.onclick = function () {
+        var username = document.getElementById('login-username').value;
+        var password = document.getElementById('login-password').value;
+        if ((!username) || (!password)) {
+            alert('username and password can not be empty');
             return false;
         }
+        hidebutton();
+        
         const user = {
             "username": username,
             "password": password
         };
-        const headers = {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        };
-        const method = 'POST';
-        const path = 'auth/login';
-
-        api.makeAPIRequest(path, {
-            method, headers,
+        fetch(signup_url, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify(user),
         })
+            .then(res => res.json())
+            .then(function (res) {
+                
+                if (res["token"]) {
+                    console.log(res["token"])
+                    window.alert('You are successfully logged in');
+                    window.localStorage.setItem('username', username);
+                    window.localStorage.setItem('token', res['token']);
+                    // location.reload();
+                   
+                    return true;
+                }
+                if (res.message === 'Invalid Username/Password') {
+                    alert("user and password is not correct")
+                    return false;
+                }
+            })
+    }
+}
+
+function hidebutton() {
+    document.getElementById("login-01").style.display = "none";
+    document.getElementById("signup-01").style.display = "none";
+    document.getElementById("login_button").style.display = "none";
+    document.getElementById("signup_button").style.display = "none"
+    // document.getElementById("Home").style.display = "block";
+    document.getElementById("Home").style.display = "inline";
+    // document.getElementById("my_profile").style.display = "block";
+    document.getElementById("my_profile").style.display = "inline";
+    // document.getElementById("logout_button").style.display = "block";
+    document.getElementById("logout_button").style.display = "inline";
+    document.getElementById("feed").style = "block";
+}
+
+
+export function signupToBack() {
+    var signup_url = "http://127.0.0.1:5003/auth/signup"
+    var submit = document.getElementById("signup_submit");
+    submit.onclick = function () {
+        var username = document.getElementById('signup-username').value;
+        var password = document.getElementById('signup-password').value;
+        var email = document.getElementById('signup-email').value;
+        var name = document.getElementById('signup-name').value;
+        if ((!username) || (!password) || (!email) || (!name)) {
+            alert('Input can not be empty');
+            return false;
+        }
+        const user = {
+            "username": username,
+            "password": password,
+            "email": email,
+            "name": name
+        };
+        fetch(signup_url, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(user)
+        })
+            .then(res => res.json())
             .then(function (res) {
                 if (res["token"]) {
-                    window.alert('You are successfully logged in');
+                    console.log(res["token"])
+                    window.alert('You are successfully signup');
                     window.localStorage.setItem('username', username);
                     window.localStorage.setItem('token', res['token']);
                     location.reload();
                 }
-                else {
-                    window.alert(res["message"]);
+                if (res.message === 'Username Taken') {
+                    alert("user alreadly exists")
+                    return false;
                 }
-            });
+            })
     }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// only for create start feed 
+export function createPageFeed_init(post) {
+    // time 
+    let postTime = time2time(post.meta.published);
+    // let upvote = createElement("span", post.meta.upvotes.length, { "data-id-upvotes": "", className: "post-upvote" });
+    let section = createElement('section', null, { "data-id-post": "", class: 'page-feed', id: post.id , style: "display:block;"});
+    let post_front_title = createElement("div", null, { class: 'post-front-title' })
+
+    
+    let subreddit = createElement('span', "r/" + post.meta.subseddit + " • ", { class: 'post-subseddit', style: 'cursor:pointer' });
+    post_front_title.appendChild(subreddit);
+    let postby = createElement('span', "Posted by @ ", { style: "color: rgb(120, 124, 126);", class: "post-by", id: 'post-by' + post.id });
+    post_front_title.appendChild(postby);
+    let auther = createElement('span', post.meta.author, { class: 'post-auther', style: "color: rgb(120, 124, 126);", style: 'cursor:pointer', id: 'post-author-id' + post.id });
+    //转到auther的post
+    // author.addEventListener('click', () => userpost(post.meta.author));
+
+    post_front_title.appendChild(auther);
+    let time = createElement('h6', postTime, { class: 'post-time', style: "color: rgb(120, 124, 126);" });
+    post_front_title.appendChild(time);
+    section.appendChild(post_front_title);
+
+    section.appendChild(createElement("h5", post.title, { class: "post-title", id: "post-title-id" + post.id }));
+    section.appendChild(createElement("h5", post.text, { class: "post-content", id: "post-content-id" + post.id }));
+
+    if (post.image != null) {
+        section.appendChild(createElement('img', null, { src: 'data:image/png;base64,' + post.image, class: 'post-image', id: 'post-image' + post.id, float: "" }));
+    }
+    // if (post.thumbnail != null) {
+    //     section.appendChild(createElement('img', null, { src: 'data:image/png;base64,' + post.thumbnail, class: 'post-image', id: 'post-image' + post.id, float: "" }));
+    // }
+    const likeicon = createElement('img', null,
+        { src: '/src/icon/up.png', alt: 'Likes', class: 'post-button', style: "cursor:pointer" });
+
+    //增加like计数
+    // likeicon.addEventListener('click', () => tolike(post.id));
+    section.appendChild(likeicon);
+    let comment_button = createElement('img', null, { src: '/src/icon/comment.png', alt: 'Comments', class: 'post-button', style: "cursor:pointer" })
+    section.appendChild(comment_button);
+    comment_button.addEventListener('click', () => {
+        if (document.getElementById("post-comments-div-" + post.id).style.display === "block") {
+            document.getElementById("post-comments-div-" + post.id).style.display = "none";
+        } else {
+            document.getElementById("post-comments-div-" + post.id).style.display = "block";
+        }
+
+    });
+    section.appendChild(createElement('h6', null, { class: "post-padding" }));
+    section.appendChild(createElement('h6', post.meta.upvotes.length, { "data-id-upvotes": "", class: "post_count_num", id: "likes-num" + post.id }));
+    section.appendChild(createElement('h6', post.comments.length, { class: "post_count_num", id: "comment-num" + post.id }));
+    section.appendChild(createElement('h6', null, { class: "post-padding" }));
+    if (post.comments.length > 0) {
+        section.appendChild(commentGenerator(post.id, post.comments))
+    } else {
+        section.appendChild(createElement("div", "No Comments Yet", { class: "post-comments-div", style: "display: none;", id: "post-comments-div-" + post.id }))
+    }
+    return section;
+}
+
+function time2time(Time) {
+    const unixTime = new Date(Time * 1000);
+    return unixTime.toLocaleString('en-AU');
+}
+
+
+export function createElement(tag, data, options = {}) {
+    const ele = document.createElement(tag);
+    ele.textContent = data;
+    return Object.entries(options).reduce(
+        (element, [field, value]) => {
+            element.setAttribute(field, value);
+            return element;
+        }, ele);
+}
+
+
+function commentGenerator(id, comment) {
+    var div_comment = createElement("div", null, { class: "post-comments-div", style: "display:none;", id: "post-comments-div-" + id })
+    // console.log(comment.length)
+    // console.log(comment)
+    for (let i = 0; i < comment.length; ++i) {
+        // console.log(comment[i])
+        div_comment.appendChild(createElement("span", "* Posted by @ ", { class: "post-comments-postby", style: "color: rgb(120, 124, 126);" }))
+        div_comment.appendChild(createElement("span", comment[i].author, { class: "post-comments-author", }))
+
+        div_comment.appendChild(createElement("span", "   " + time2time(comment[i].published), { class: "post-comments-time", style: "color: rgb(120, 124, 126);" }))
+        div_comment.appendChild(createElement("h4", comment[i].comment, { class: "post-comments-content", }));
+    }
+    return div_comment;
+}

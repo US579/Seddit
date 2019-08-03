@@ -13,43 +13,46 @@ export function addElement() {
 
     // add to the father
     newHeader.appendChild(newH1);
-    // tag : header->ul
-    let newUl = document.createElement("ul");
-    newUl.className = 'nav';
-    // tag : ul->li
+    // // tag : header->ul
+    // let newUl = document.createElement("ul");
+    // newUl.className = 'nav';
+    // // tag : ul->li
 
-    // tag : li -> input
-    let inputTag = document.createElement("input");
-    inputTag.id = "search";
-    inputTag.setAttribute("data-id-search","");
-    inputTag.placeholder = "Search Seddit";
-    inputTag.type = "search";
+    // // tag : li -> input
+    // let inputTag = document.createElement("input");
+    // inputTag.id = "search";
+    // inputTag.setAttribute("data-id-search","");
+    // inputTag.placeholder = "Search Seddit";
+    // inputTag.type = "search";
 
-    // tag : li -> button
-    let buttonTag = document.createElement("button");
-    buttonTag.setAttribute("data-id-login", "");
-    buttonTag.className = "button button-primary";
-    buttonTag.innerText = "Log In";
-    buttonTag.id = "bt1";
-    buttonTag.setAttribute("onclick" , "document.getElementById('id01').style.display='block'")
-    buttonTag.style ="cursor:pointer";
+    // // tag : li -> button
+    // let buttonTag = document.createElement("button");
+    // buttonTag.setAttribute("data-id-login", "");
+    // buttonTag.className = "button button-primary";
+    // buttonTag.innerText = "Log In";
+    // buttonTag.id = "bt1";
+    // buttonTag.setAttribute("onclick" , "document.getElementById('id01').style.display='block'")
+    // buttonTag.style ="cursor:pointer";
 
-    // tag : li -> button2
-    let buttonTag2 = document.createElement("button");
-    buttonTag2.setAttribute("data-id-signup", "");
-    buttonTag2.className = "button button-secondary"
-    buttonTag2.innerText = "Sign Up";
-    buttonTag2.id = "bt2";
-    buttonTag2.style = "cursor:pointer";
+    // // tag : li -> button2
+    // let buttonTag2 = document.createElement("button");
+    // buttonTag2.setAttribute("data-id-signup", "");
+    // buttonTag2.className = "button button-secondary"
+    // buttonTag2.innerText = "Sign Up";
+    // buttonTag2.id = "bt2";
+    // signup_button.style = "cursor:pointer";
 
-    // loop for generate <header>
-    var but_and_input = [inputTag, buttonTag, buttonTag2]
-    for (let i = 0; i < 3; ++i) {
-        let newLi = document.createElement("li");
-        newLi.className = 'nav-item';
-        newLi.appendChild(but_and_input[i]);
-        newUl.append(newLi);
-    }
+    // // loop for generate <header>
+    // var but_and_input = [inputTag, buttonTag, logout_button, buttonTag2]
+    // for (let i = 0; i < but_and_input.length; ++i) {
+    //     let newLi = document.createElement("li");
+    //     newLi.className = 'nav-item';
+    //     newLi.appendChild(but_and_input[i]);
+    //     newUl.append(newLi);
+    // }
+    // newHeader.appendChild(newUl);
+    let newUl = buttonInit();
+
     newHeader.appendChild(newUl);
     // add the newly created element and its content into the DOM 
     
@@ -90,6 +93,27 @@ export function addElement() {
     currentDiv.appendChild(footerTag);
     addlogin("login-01");
     addlogin("signup-01");
+}
+
+function buttonInit(){
+    let newUl = document.createElement("ul");
+    newUl.className = 'nav';
+    let search_input = createElement("input", "Search Seddit", { "data-id-search": "", placeholder: "Search Seddit", type: "search", id: "search_input", display:"inline"});
+    let login_button = createElement("button", "Log In", { "data-id-login": "", style: "cursor:pointer", id: "login_button", class: "button button-primary", display:"inline" });
+    let signup_button = createElement("button", "Sign Up", { "data-id-signup": "", style: "cursor:pointer", id: "signup_button", class: "button button-primary", display:"inline" });
+
+    let my_profile = createElement("button", "My profile", { "data-id-myprofile": "", style: "cursor:pointer;display:none", id: "my_profile", class: "button button-primary", });
+    let Home = createElement("button", "Home", { "data-id-home": "", style: "cursor:pointer;display:none", id: "Home", class: "button button-primary", display: "inline" });
+    let logout_button = createElement("button", "Log out", { "data-id-logout": "", style: "cursor:pointer;display:none", id: "logout_button", class: "logout-button-class" });
+    // loop for generate <header>
+    var but_and_input = [search_input, login_button, signup_button, my_profile, Home, logout_button]
+    for (let i = 0; i < but_and_input.length; ++i) {
+        let newLi = document.createElement("li");
+        newLi.className = 'nav-item';
+        newLi.appendChild(but_and_input[i]);
+        newUl.append(newLi);
+    }
+    return newUl;
 }
 
 export function addPost(data,auther,options = {}){
@@ -159,7 +183,6 @@ function addlogin(value){
     input2.placeholder = "Enter Password";
     input2.name = "psw";
     // input2.setAttribute("required", "required");
-
     
     let submit = document.createElement("button");
     if (value === "signup-01") {
@@ -207,7 +230,6 @@ export function createFeed(post){
 }
 
 
-
 function createPostTile(post) {
     // time 
     let postTime = time2time(post.meta.published);
@@ -215,8 +237,7 @@ function createPostTile(post) {
     let section = createElement('section', null, { "data-id-post": "", class: 'post', id: post.id });
     let post_front_title = createElement("div", null, { class: 'post-front-title' })
     
-
-    let subreddit = createElement('span', post.meta.subseddit + " • ", { class: 'post-subseddit', style: 'cursor:pointer' });
+    let subreddit = createElement('span', "r/" + post.meta.subseddit + " • ", { class: 'post-subseddit', style: 'cursor:pointer' });
     post_front_title.appendChild(subreddit);
     let postby = createElement('span', "Posted by @ ", { style: "color: rgb(120, 124, 126);", class: "post-by", id: 'post-by' + post.id });
     post_front_title.appendChild(postby);
@@ -235,30 +256,51 @@ function createPostTile(post) {
     if (post.image != null) {
         section.appendChild(createElement('img', null, { src: 'data:image/png;base64,' + post.image, class: 'post-image', id: 'post-image' + post.id, float: "" }));
     }
+    // if (post.thumbnail != null) {
+    //     section.appendChild(createElement('img', null, { src: 'data:image/png;base64,' + post.thumbnail, class: 'post-image', id: 'post-image' + post.id, float: "" }));
+    // }
     const likeicon = createElement('img', null,
         { src: '/src/icon/up.png', alt: 'Likes', class: 'post-button', style: "cursor:pointer" });
 
     //增加like计数
     // likeicon.addEventListener('click', () => tolike(post.id));
     section.appendChild(likeicon);
-    section.appendChild(createElement('img', null,{ src: '/src/icon/comment.png', alt: 'Comments', class: 'post-button', style: "cursor:pointer" }));
+    let comment_button = createElement('img', null, { src: '/src/icon/comment.png', alt: 'Comments', class: 'post-button', style: "cursor:pointer" })
+    section.appendChild(comment_button);
+    comment_button.addEventListener('click', () => {
+        if (document.getElementById("post-comments-div-" + post.id).style.display === "block"){
+            document.getElementById("post-comments-div-" + post.id).style.display = "none";
+        }else{
+            document.getElementById("post-comments-div-" + post.id).style.display = "block";
+        }
+        
+    });
     section.appendChild(createElement('h6', null, { class: "post-padding" }));
     section.appendChild(createElement('h6', post.meta.upvotes.length, { "data-id-upvotes": "", class: "post_count_num", id: "likes-num" + post.id }));
     section.appendChild(createElement('h6', post.comments.length, { class: "post_count_num", id: "comment-num" + post.id }));
     section.appendChild(createElement('h6', null, { class: "post-padding" }));
+    if (post.comments.length > 0){
+        section.appendChild(commentGenerator(post.id, post.comments))
+    }else{
+        section.appendChild(createElement("div", "No Comments Yet", { class: "post-comments-div", style: "display: none;", id: "post-comments-div-" + post.id }))
+    }
     return section;
 }
 
-
-function commentGenerator(comment){
-
-
-
-
-
+function commentGenerator(id,comment){
+    var div_comment = createElement("div", null, { class: "post-comments-div", style:"display:none;",id:"post-comments-div-"+id})
+    // console.log(comment.length)
+    // console.log(comment)
+    for (let i = 0; i < comment.length; ++i){
+        // console.log(comment[i])
+        div_comment.appendChild(createElement("span", "* Posted by @ ", { class: "post-comments-postby", style: "color: rgb(120, 124, 126);" }))
+        div_comment.appendChild(createElement("span", comment[i].author, { class: "post-comments-author", }))
+            
+        div_comment.appendChild(createElement("span", "   " + time2time(comment[i].published), { class: "post-comments-time", style: "color: rgb(120, 124, 126);" }))
+        div_comment.appendChild(createElement("h4", comment[i].comment, { class: "post-comments-content", }));
+    }
+    return div_comment;
 }
-
-
 
 
 function time2time(Time) {
@@ -276,4 +318,5 @@ export function createElement(tag, data, options = {}) {
             return element;
         }, ele);
 }
+
 

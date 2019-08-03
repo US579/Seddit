@@ -15,7 +15,6 @@ function initApp(apiUrl) {
   // initial page
   init.addElement();
   var onBut3 = document.getElementById("bt3");
-
   // add event listener
   myModule.addCloseListener(1,"close1","login-01");
   myModule.addCloseListener(1,"close2","signup-01");
@@ -26,136 +25,202 @@ function initApp(apiUrl) {
     init.addPost("us579", "us579as");
   })
 
-
-
 // login 
-loginToBack();
+const login = document.getElementById("login_button");
+login.addEventListener("click",(event)=>{
+  myModule.loginToBack();
+})
 
+  
 // signup
-signupToBack() 
+const signup = document.getElementById("signup_button");
+signup.addEventListener("click", (event) => {
+    myModule.signupToBack();
+  })
+
+
+// frontfeed show 
+anonyFeed();
 
 
 
 
+// Logout button listener
+  // logout listener if user not login alret() if login in clean the cache
+  const logout = document.getElementById('logout_button');
+  logout.onclick = function () {
+    if (myModule.checkLocalStore('username')) {
+      //display feed
+      document.getElementById("feed").style = "block";
+      //hide login and signup
+      document.getElementById("login_button").style.display = "block";
+      document.getElementById("login_button").style.display = "inline";
+      document.getElementById("signup_button").style.display = "block";
+      document.getElementById("signup_button").style.display = "inline";
 
-function loginToBack(){
-  var signup_url = "http://127.0.0.1:5003/auth/login"
-  var submit = document.getElementById("login_submit");
-  submit.onclick = function () {
-    var username = document.getElementById('login-username').value;
-    var password = document.getElementById('login-password').value;
-    if ((!username) || (!password)) {
-      alert('username and password can not be empty');
-      return false;
+      //display home myProfile logout  button
+      document.getElementById("Home").style.display = "none";
+      document.getElementById("my_profile").style.display = "none";
+      document.getElementById("logout_button").style.display = "none";
+      window.localStorage.clear();
+      alert("successfully logout");
+      location.reload();
+    } else {
+      alert("you are not login");
     }
-    const user = {
-      "username": username,
-      "password": password
-    };
-    fetch(signup_url, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(user),
-    })
-      .then(function (data) {
-        if (data.status === 200) {
-          alert("regis")
-        }
-        console.log(JSON.stringify(data));
-        console.log(data.status)
-        console.log('Request succeeded with JSON response', data);
-      })
-      .then(function (res) {
-        if (res["token"]) {
-          window.alert('You are successfully logged in');
-          window.localStorage.setItem('username', username);
-          window.localStorage.setItem('token', res['token']);
-          location.reload();
-        }
-      })
-      .catch(function (error) {
-        console.log('Request failed', error);
-      });
   }
-}
-
-
-function signupToBack() {
-  var signup_url = "http://127.0.0.1:5003/auth/signup"
-  var submit = document.getElementById("signup_submit");
-  submit.onclick = function () {
-    var username = document.getElementById('signup-username').value;
-    var password = document.getElementById('signup-password').value;
-    var email = document.getElementById('signup-email').value;
-    var name = document.getElementById('signup-name').value;
-    if ((!username) || (!password) || (!email) || (!name)) {
-      alert('Input can not be empty');
-      return false;
-    }
-    const user = {
-      "username": username,
-      "password": password,
-      "email" : email,
-      "name" : name
-    };
-    fetch(signup_url, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type':'application/json'
-      },
-      body: JSON.stringify(user),
-    })
-      .then(function (data) {
-        if (data.status === 200){
-          alert("login")
-        }
-        if (data.status === 409){
-          alert("User already exists!")
-          return false;
-        }
-        console.log(JSON.stringify(data));
-        console.log(data.status)
-        console.log('Request succeeded with JSON response', data);
-      })
-      .then(function (res) {
-        if (res["token"]) {
-          window.alert('You are successfully logged in');
-          window.localStorage.setItem('username', username);
-          window.localStorage.setItem('token', res['token']);
-          location.reload();
-        }
-      })
-      .catch(function (error) {
-        console.log('Request failed', error);
-      });
-  }
-}
-
-
-
-
-
-
 
 
   // --------------- generate feed -------------------------
-  console.log("hello")
+  // not login feed show start feed 
+  function anonyFeed(){
   fetch("../data/feed.json")
     .then(res => res.json())
     .then(res => {
-      console.log(res.posts.length);
-      
+      const res2 = myModule.sortArray(res);
       let feed = document.getElementById("feed");
-      for (let i = 0; i < res.posts.length;++i){
-        let content = init.createFeed(res.posts[i]);
+      for (let key in res2){
+        let content = myModule.createPageFeed_init(res.posts[res2[key]]);
         feed.appendChild(content);
           }
       })
+    }
   // -------------------------------------------------
+
+
+// let login_submit = document.getElementById("login_submit")
+
+
+
+getUserProfile(myModule.checkLocalStore("token"))
+function getUserProfile(token) {
+    var profile_url = "http://127.0.0.1:5003/user/"
+      fetch(profile_url, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+           'Authorization': 'Token ' + token
+        },
+      })
+      //  .then(alert("asdasdas"))
+        .then(res => res.json())
+        .then(function (res) {
+          console.log(res)
+        })
+    }
+
+
+
+
+
+
+
+
+
+function getUserFeed(username){
+  const feed_url = "http://127.0.0.1:5003/user/feed";
+  fetch(feed_url, {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+       'Authorization': 'Token ' + myModule.checkLocalStore('token')
+    }
+    })
+    .then(res => res.json())
+    .then(function (res){
+      console.log(res.posts);
+      if (res.posts.length == 0){
+        console.log( myModule.checkLocalStore('token'))
+        alert("user has not posted anything yet");
+        return false;
+      }else{
+        for (let i = 0 ;i < res.posts.length; ++i){
+          let content = myModule.createPageFeed_init(res.posts[i]);
+          feed.appendChild(content);
+        }
+      }
+    })
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// function sub_getUserFeed(){
+
+// }
+
+
+
+  // export function loginToBack() {
+  //   var signup_url = "http://127.0.0.1:5003/auth/login"
+  //   var submit = document.getElementById("login_submit");
+  //   submit.onclick = function () {
+  //     var username = document.getElementById('login-username').value;
+  //     var password = document.getElementById('login-password').value;
+  //     if ((!username) || (!password)) {
+  //       alert('username and password can not be empty');
+  //       return false;
+  //     }
+  //     const user = {
+  //       "username": username,
+  //       "password": password
+  //     };
+  //     fetch(signup_url, {
+  //       method: 'POST',
+  //       headers: {
+  //         'Accept': 'application/json',
+  //         'Content-Type': 'application/json'
+  //       },
+  //       body: JSON.stringify(user),
+  //     })
+  //       .then(res => res.json())
+  //       .then(function (res) {
+  //         // console.log(res)
+  //         if (res["token"]) {
+  //           window.alert('You are successfully logged in');
+  //           window.localStorage.setItem('username', username);
+  //           window.localStorage.setItem('token', res['token']);
+  //           location.reload();
+  //         }
+  //         if (res.message === 'Invalid Username/Password') {
+  //           alert("user and password is not correct")
+  //           return false;
+  //         }
+  //       })
+  //   }
+  // }
+
+
+
+
+
+
+
+
 
 
   // console.log("hello")
