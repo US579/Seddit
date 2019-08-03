@@ -13,49 +13,9 @@ export function addElement() {
 
     // add to the father
     newHeader.appendChild(newH1);
-    // // tag : header->ul
-    // let newUl = document.createElement("ul");
-    // newUl.className = 'nav';
-    // // tag : ul->li
-
-    // // tag : li -> input
-    // let inputTag = document.createElement("input");
-    // inputTag.id = "search";
-    // inputTag.setAttribute("data-id-search","");
-    // inputTag.placeholder = "Search Seddit";
-    // inputTag.type = "search";
-
-    // // tag : li -> button
-    // let buttonTag = document.createElement("button");
-    // buttonTag.setAttribute("data-id-login", "");
-    // buttonTag.className = "button button-primary";
-    // buttonTag.innerText = "Log In";
-    // buttonTag.id = "bt1";
-    // buttonTag.setAttribute("onclick" , "document.getElementById('id01').style.display='block'")
-    // buttonTag.style ="cursor:pointer";
-
-    // // tag : li -> button2
-    // let buttonTag2 = document.createElement("button");
-    // buttonTag2.setAttribute("data-id-signup", "");
-    // buttonTag2.className = "button button-secondary"
-    // buttonTag2.innerText = "Sign Up";
-    // buttonTag2.id = "bt2";
-    // signup_button.style = "cursor:pointer";
-
-    // // loop for generate <header>
-    // var but_and_input = [inputTag, buttonTag, logout_button, buttonTag2]
-    // for (let i = 0; i < but_and_input.length; ++i) {
-    //     let newLi = document.createElement("li");
-    //     newLi.className = 'nav-item';
-    //     newLi.appendChild(but_and_input[i]);
-    //     newUl.append(newLi);
-    // }
-    // newHeader.appendChild(newUl);
     let newUl = buttonInit();
-
     newHeader.appendChild(newUl);
     // add the newly created element and its content into the DOM 
-    
     let mainTag = document.createElement("main");
     mainTag.setAttribute("role",'main');
     // tag : main -> li
@@ -70,11 +30,7 @@ export function addElement() {
     h3Tag.className = "feed-title alt-text";
     h3Tag.innerText ="Popular posts";
     //tag : button3
-    let buttonTag3 = document.createElement("button");
-    buttonTag3.className ="button button-secondary";
-    buttonTag3.innerText="Post";
-    buttonTag3.id = "bt3";
-    buttonTag3.style = "cursor:pointer";
+    let buttonTag3 = createElement("button", "Post", { class: "button button-secondary", id: "bt3", style:"cursor:pointer"})
 
     divTag.appendChild(h3Tag);
     divTag.appendChild(buttonTag3);
@@ -95,6 +51,7 @@ export function addElement() {
     addlogin("signup-01");
 }
 
+// initial all the buttons 
 function buttonInit(){
     let newUl = document.createElement("ul");
     newUl.className = 'nav';
@@ -225,90 +182,7 @@ function addlogin(value){
 }
 
 
-export function createFeed(post){
-    return createPostTile(post);
-}
-
-
-
-function createPostTile(post) {
-    // time 
-    let postTime = time2time(post.meta.published);
-    // let upvote = createElement("span", post.meta.upvotes.length, { "data-id-upvotes": "", className: "post-upvote" });
-    let section = createElement('section', null, { "data-id-post": "", class: 'post', id: post.id });
-    let post_front_title = createElement("div", null, { class: 'post-front-title' })
-    
-    let subreddit = createElement('span', "r/" + post.meta.subseddit + " • ", { class: 'post-subseddit', style: 'cursor:pointer' });
-    post_front_title.appendChild(subreddit);
-    let postby = createElement('span', "Posted by @ ", { style: "color: rgb(120, 124, 126);", class: "post-by", id: 'post-by' + post.id });
-    post_front_title.appendChild(postby);
-    let auther = createElement('span', post.meta.author, { class: 'post-auther', style: "color: rgb(120, 124, 126);", style: 'cursor:pointer', id: 'post-author-id' + post.id });
-    //转到auther的post
-    // author.addEventListener('click', () => userpost(post.meta.author));
-    
-    post_front_title.appendChild(auther);
-    let time = createElement('h6', postTime, { class: 'post-time', style: "color: rgb(120, 124, 126);" });
-    post_front_title.appendChild(time);
-    section.appendChild(post_front_title);
-    section.appendChild(createElement("h5",post.title,{class:"post-title",id:"post-title-id"+post.id}));
-    section.appendChild(createElement("h5",post.text,{class:"post-content",id:"post-content-id"+post.id}));
-
-    if (post.image != null) {
-        section.appendChild(createElement('img', null, { src: 'data:image/png;base64,' + post.image, class: 'post-image', id: 'post-image' + post.id, float: "" }));
-    }
-    // if (post.thumbnail != null) {
-    //     section.appendChild(createElement('img', null, { src: 'data:image/png;base64,' + post.thumbnail, class: 'post-image', id: 'post-image' + post.id, float: "" }));
-    // }
-    const likeicon = createElement('img', null,
-        { src: '/src/icon/up.png', alt: 'Likes', class: 'post-button', style: "cursor:pointer" });
-
-    //增加like计数
-    // likeicon.addEventListener('click', () => tolike(post.id));
-    section.appendChild(likeicon);
-    let comment_button = createElement('img', null, { src: '/src/icon/comment.png', alt: 'Comments', class: 'post-button', style: "cursor:pointer" })
-    section.appendChild(comment_button);
-    comment_button.addEventListener('click', () => {
-        if (document.getElementById("post-comments-div-" + post.id).style.display === "block"){
-            document.getElementById("post-comments-div-" + post.id).style.display = "none";
-        }else{
-            document.getElementById("post-comments-div-" + post.id).style.display = "block";
-        }
-        
-    });
-    section.appendChild(createElement('h6', null, { class: "post-padding" }));
-    section.appendChild(createElement('h6', post.meta.upvotes.length, { "data-id-upvotes": "", class: "post_count_num", id: "likes-num" + post.id }));
-    section.appendChild(createElement('h6', post.comments.length, { class: "post_count_num", id: "comment-num" + post.id }));
-    section.appendChild(createElement('h6', null, { class: "post-padding" }));
-    if (post.comments.length > 0){
-        section.appendChild(commentGenerator(post.id, post.comments))
-    }else{
-        section.appendChild(createElement("div", "No Comments Yet", { class: "post-comments-div", style: "display: none;", id: "post-comments-div-" + post.id }))
-    }
-    return section;
-}
-
-function commentGenerator(id,comment){
-    var div_comment = createElement("div", null, { class: "post-comments-div", style:"display:none;",id:"post-comments-div-"+id})
-    // console.log(comment.length)
-    // console.log(comment)
-    for (let i = 0; i < comment.length; ++i){
-        // console.log(comment[i])
-        div_comment.appendChild(createElement("span", "* Posted by @ ", { class: "post-comments-postby", style: "color: rgb(120, 124, 126);" }))
-        div_comment.appendChild(createElement("span", comment[i].author, { class: "post-comments-author", }))
-            
-        div_comment.appendChild(createElement("span", "   " + time2time(comment[i].published), { class: "post-comments-time", style: "color: rgb(120, 124, 126);" }))
-        div_comment.appendChild(createElement("h4", comment[i].comment, { class: "post-comments-content", }));
-    }
-    return div_comment;
-}
-
-
-function time2time(Time) {
-    const unixTime = new Date(Time * 1000);
-    return unixTime.toLocaleString('en-AU');
-}
-
-
+// the function to create the html
 export function createElement(tag, data, options = {}) {
     const ele = document.createElement(tag);
     ele.textContent = data;

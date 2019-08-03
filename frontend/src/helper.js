@@ -66,6 +66,32 @@ export function pgswitch(option = 0) {
 
 
 
+// model window
+
+// var modal = document.getElementById('simpleModal');
+// var modalBtn = document.getElementById('modalBtn');
+// var closeBtn = document.getElementsByClassName('closeBtn')[0];
+// modalBtn.addEventListener('click', openModal);
+// closeBtn.addEventListener('click', closeModal);
+
+// window.addEventListener('click', outsideClick);
+
+// function openModal() {
+//     modal.style.display = "block";
+// }
+
+// function closeModal() {
+//     modal.style.display = 'none';
+// }
+
+// function outsideClick(e) {
+//     if (e.target == modal) {
+//         modal.style.display = 'none';
+//     }
+// }
+
+
+
 export function loginToBack() {
     var signup_url = "http://127.0.0.1:5003/auth/login"
     var username = document.getElementById('login-username').value;
@@ -115,11 +141,8 @@ function hidebutton() {
     document.getElementById("signup-01").style.display = "none";
     document.getElementById("login_button").style.display = "none";
     document.getElementById("signup_button").style.display = "none"
-    // document.getElementById("Home").style.display = "block";
     document.getElementById("Home").style.display = "inline";
-    // document.getElementById("my_profile").style.display = "block";
     document.getElementById("my_profile").style.display = "inline";
-    // document.getElementById("logout_button").style.display = "block";
     document.getElementById("logout_button").style.display = "inline";
     document.getElementById("feed").style = "block";
 }
@@ -154,7 +177,7 @@ export function signupToBack() {
             .then(res => res.json())
             .then(function (res) {
                 if (res["token"]) {
-                    console.log(res["token"])
+                    // console.log(res["token"])
                     window.alert('You are successfully signup');
                     window.localStorage.setItem('username', username);
                     window.localStorage.setItem('token', res['token']);
@@ -170,12 +193,7 @@ export function signupToBack() {
 
 
 
-
-
-
-
-
-//------------------------------------- display user feed when click My profile button-------------------------------------
+//--------------------------------------------------------------------------------------------------------
 
 
 
@@ -193,7 +211,6 @@ export function signupToBack() {
 // getUserProfile(checkLocalStore("token"))
 export async function getUserFeed(token) {
     var profile_url = "http://127.0.0.1:5003/user/"
-    // var profile_url = "http://127.0.0.1:5003/user/?id=3"
     await fetch(profile_url, {
         method: 'GET',
         headers: {
@@ -202,22 +219,15 @@ export async function getUserFeed(token) {
             'Authorization': 'Token ' + token
         },
     })
-        //  .then(alert("asdasdas"))
         .then(res => res.json())
         .then(function (res) {
-            console.log(res.id)
-            // console.log(res.following)
-            // console.log(res.following.length)
-            // console.log(res.followed_num)
-            // console.log(res.posts.length)
-            let profile = profileGenerator(res);
-            feed.innerHTML = ""
-            feed.appendChild(profile)
+            // console.log(res.id);
+            let profile = profileGenerator(res,1);
+            feed.innerHTML = "";
+            feed.appendChild(profile);
             fetchUserFeed();
-            
         })
-}
-
+    }
 function fetchUserFeed() {
     const feed_url = "http://127.0.0.1:5003/user/feed";
     fetch(feed_url, {
@@ -230,12 +240,12 @@ function fetchUserFeed() {
     })
     .then(res => res.json())
     .then(function (res) {
-        // console.log(res);
-        if (res.posts.length === 0) {
-            feed.appendChild(createElement("div", "Wow,such empty", { class: "empty-feed" }))
-        }
-        for (let i = 0 ; i < res.posts.length ;++i){
-            let content = createPageFeed_init(res.posts[i]);
+        console.log(res);
+        // if (res.posts.length === 0) {
+        //     feed.appendChild(createElement("div", "Wow,such empty", { class: "empty-feed",id:"empty-feed" }))
+        // }
+        for (let i = res.posts.length-1; i > -1  ;i--){
+            let content = createPageFeed(res.posts[i]);
             feed.appendChild(content);
         }
     })
@@ -245,15 +255,14 @@ function fetchUserFeed() {
 
 
 
-// only for create start feed 
-export function createPageFeed_init(post) {
+// -------------------------------------------- Post templete  ---------------------------------
+export function createPageFeed(post,option=1) {
     // time 
     let postTime = time2time(post.meta.published);
     // let upvote = createElement("span", post.meta.upvotes.length, { "data-id-upvotes": "", className: "post-upvote" });
     let section = createElement('section', null, { "data-id-post": "", class: 'page-feed', id: post.id , style: "display:block;"});
-    let post_front_title = createElement("div", null, { class: 'post-front-title' })
+    let post_front_title = createElement("div", null, { class: 'post-front-title' });
 
-    
     let subreddit = createElement('span', "r/" + post.meta.subseddit + " • ", { class: 'post-subseddit', style: 'cursor:pointer' });
     post_front_title.appendChild(subreddit);
     let postby = createElement('span', "Posted by @ ", { style: "color: rgb(120, 124, 126);", class: "post-by", id: 'post-by' + post.id });
@@ -280,18 +289,47 @@ export function createPageFeed_init(post) {
         { src: '/src/icon/up.png', alt: 'Likes', class: 'post-button', style: "cursor:pointer" });
 
     //增加like计数
-    // likeicon.addEventListener('click', () => tolike(post.id));
+    console.log(post.id)
+    likeicon.addEventListener('click', () => thumbsup(post.id));
     section.appendChild(likeicon);
+   
+    //comment button
     let comment_button = createElement('img', null, { src: '/src/icon/comment.png', alt: 'Comments', class: 'post-button', style: "cursor:pointer" })
     section.appendChild(comment_button);
+
+
+    // add event listener to the comment_button
     comment_button.addEventListener('click', () => {
         if (document.getElementById("post-comments-div-" + post.id).style.display === "block") {
             document.getElementById("post-comments-div-" + post.id).style.display = "none";
         } else {
             document.getElementById("post-comments-div-" + post.id).style.display = "block";
         }
-
     });
+    //delete button
+    let delete_post_button = createElement('img', null, { src: '/src/icon/delete.png', id:"delete-post",alt: 'delete', class: 'post-button', style: "cursor:pointer" })
+    section.appendChild(delete_post_button);
+    delete_post_button.addEventListener('click', () => deletePost(post.id));
+
+
+    // upvote tag
+    let upvote_button = createElement('img', null, { src: '/src/icon/upvote.png', alt: 'upvote', class: 'post-button', style: "cursor:pointer", id: "upvote-name-" + post.id })
+    section.appendChild(upvote_button);
+    // option for distinguish initial feed between user feed
+    if (option === 1){
+        let upvote_tag = upvote_list(post.meta.upvotes,post.id);
+        section.appendChild(upvote_tag)
+        upvote_button.addEventListener('click', () => {
+            if (document.getElementById("post-upvote-" + post.id).style.display === "block") {
+                document.getElementById("post-upvote-" + post.id).style.display = "none";
+            } else {
+                document.getElementById("post-upvote-" + post.id).style.display = "block";
+            }
+        });
+    }
+
+    // upvote_button.addCloseListener("click", () => upvote_list(post.meta.upvotes));
+
     section.appendChild(createElement('h6', null, { class: "post-padding" }));
     section.appendChild(createElement('h6', post.meta.upvotes.length, { "data-id-upvotes": "", class: "post_count_num", id: "likes-num" + post.id }));
     section.appendChild(createElement('h6', post.comments.length, { class: "post_count_num", id: "comment-num" + post.id }));
@@ -304,23 +342,111 @@ export function createPageFeed_init(post) {
     return section;
 }
 
-function time2time(Time) {
-    const unixTime = new Date(Time * 1000);
-    return unixTime.toLocaleString('en-AU');
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+// thumbsup function 
+function thumbsup(id){
+    alert(id);
+    let thumbsup_url = "http://127.0.0.1:5003/post/vote?id="+id;
+    fetch(thumbsup_url, {
+        method: 'PUT',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': 'Token ' + checkLocalStore("token")
+        },
+    })
+    .then(res=>res.json())
+    .then(function(res){
+        console.log(res)
+        if (res.message === "success"){
+            let addlike = document.getElementById("likes-num" + id);
+            addlike.innerText = parseInt(document.getElementById("likes-num" + id).innerText) + 1;
+        }else{
+            if (res.message === "Internal Server Error"){
+                alert('can not like yourself')
+                return;
+            }
+            alert("you have to login first")
+        }
+    })
+    
 }
 
 
-export function createElement(tag, data, options = {}) {
-    const ele = document.createElement(tag);
-    ele.textContent = data;
-    return Object.entries(options).reduce(
-        (element, [field, value]) => {
-            element.setAttribute(field, value);
-            return element;
-        }, ele);
+// //follow function
+// function follow(){
+
+// }
+
+
+// delete post function
+// problem   依旧存在问题 返回 400
+function deletePost(id){
+    alert(id);
+    let thumbsup_url = "http://127.0.0.1:5003/post/?id=" + id;
+    console.log(checkLocalStore("token"))
+    console.log("http://127.0.0.1:5003/post/?id=" + id)
+    console.log("Token " + checkLocalStore("token"))
+    fetch(thumbsup_url, {
+        method: 'POST',
+        headers: {
+            "accept": "application/json",
+            "Authorization": "Token " + checkLocalStore("token")
+        }
+    })
+        .then(res => res.json())
+        .then(function (res) {
+            alert("delete")
+            console.log(res)
+            if (res.message === "success") {
+                alert("post has been deleted")
+            } else {
+                if (res.message === "Internal Server Error") {
+                    alert('can not like yourself')
+                    return;
+                }
+                alert("delete failed")
+            }
+        })
+
+
 }
 
 
+// list : a list of the user id (whe give thumbs up to the user)
+// id : the user of the id 
+export function upvote_list(list,id){
+    let upvote_div = createElement("div", null, { class: "modal-window", id: "post-upvote-" + id, style: "display:none;"});
+    upvote_div.appendChild(createElement("h5", "People who gives you thumbs up ", { id: "upvote=-instruction" }))
+    upvote_div.onclick= function() {
+        upvote_div.style.display="none";
+    }
+    console.log(list)
+    for (let i = 0 ;i< list.length ; ++i){
+    const upvote_url = "http://127.0.0.1:5003/user/?id=" + list[i];
+    fetch(upvote_url,{
+        method:'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': 'Token ' + checkLocalStore("token")
+        },
+    })
+    .then(res=>res.json())
+    .then(function(res) {
+        upvote_div.appendChild(createElement("p", res.name , {class: "upvote-name" }))
+        })
+    }
+    return upvote_div; 
+}
+
+
+
+
+// create comment elements and return 
 function commentGenerator(id, comment) {
     var div_comment = createElement("div", null, { class: "post-comments-div", style: "display:none;", id: "post-comments-div-" + id })
     // console.log(comment.length)
@@ -337,36 +463,7 @@ function commentGenerator(id, comment) {
 }
 
 
-
-
-
-
-// sort published 
-export function sortArray(res) {
-    var dic = {};
-    for (let i = 0; i < res.posts.length; ++i) {
-        let published = res.posts[i].meta.published;
-        dic[i] = parseInt(published);
-    }
-    var res2 = Object.keys(dic).sort(function (a, b) { return dic[b] - dic[a]; });
-    return res2;
-}
-
-export function checkLocalStore(key) {
-    if (window.localStorage) {
-        // alert('ahahahahh')
-        console.log(window.localStorage.getItem(key));
-        return window.localStorage.getItem(key);
-    } else {
-        return null
-    }
-}
-
-
-
-
-
-
+//give some body thumbs up
 
 
 
@@ -387,14 +484,17 @@ export async function getUserPost(token) {
         //  .then(alert("asdasdas"))
         .then(res => res.json())
         .then(function (res) {
-            console.log(res)
-            let profile = profileGenerator(res);
-            feed.innerHTML = ""
+            // console.log(res)
+            let profile = profileGenerator(res,2);
+            feed.innerHTML = "";
             feed.appendChild(profile)
-            if (res.following.length === 0) {
-                feed.appendChild(createElement("div", "Wow,such empty", { class: "empty-feed" }))
-            }
-            for (let i = 0; i < res.posts.length; ++i) {
+            feed.appendChild(postGenerator());
+            // if (res.following.length === 0) {
+            //     feed.appendChild(createElement("div", "Wow,such empty", { class: "empty-feed" }))
+            // }
+            // let buttonTag3 = createElement("button", "Post", { class: "button button-secondary", id: "post-button", style: "cursor:pointer" })
+            // feed.appendChild(buttonTag3);
+            for (let i = res.posts.length-1; i != 0; i--) {
                 // console.log(res.following[i])
                 fetchUserPost(res.posts[i]);
             }
@@ -413,21 +513,36 @@ function fetchUserPost(id) {
     })
         .then(res => res.json())
         .then(function (res) {
-            console.log(res);
-            let content = createPageFeed_init(res);
-            console.log(content)
-            console.log(res.meta)
+            // console.log(res);
+            let content = createPageFeed(res);
+            // console.log(content)
+            // console.log(res.meta)
+            // document.getElementById("feed").appendChild(postGenerator());
             document.getElementById("feed").appendChild(content);
         })
 }
 
 
 
+function postGenerator(){
+    let postDIv = createElement("div",null,{id:"Post-to-db",class:"post-to-db"})
+    postDIv.appendChild(createElement("input", null, { type: "file", id: "file_upload", placeholder:"Enter your description here"}));
+    postDIv.appendChild(createElement("input", null, { id: "decription", placeholder: "Enter your description here",}));
+    postDIv.appendChild(createElement("button", "Post", { class: "post-Bnt", id: "post-Bnt", style: "cursor:pointer" }));
+    // test for post button
+    return postDIv;
+}
 
-function profileGenerator(res) {
+// user feed : 1
+// user post : 2
+function profileGenerator(res,option) {
     let profile = createElement("div", null, { id: "profile-" + res.id, class: "profile" })
+    // if (option===2){
+    // profile.appendChild(createElement("button", "Post", { class: "post-Bnt", id: "post-Bnt", style: "cursor:pointer" }));
+    // }
     profile.appendChild(createElement("div", res.name, { class: "profile-name" }))
-    console.log(res.following)
+   
+    // console.log(res.following)
     profile.appendChild(createElement("b", "Following: " + res.following.length, { class: "profile-following" }))
     profile.appendChild(createElement("b", "Upvotes: " + res.followed_num, { class: "profile-upvotes" }))
     profile.appendChild(createElement("b", "Followed: " + res.followed_num, { class: "profile-followed" }))
@@ -436,5 +551,49 @@ function profileGenerator(res) {
 
 }
 
-//--------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------
 
+
+
+
+
+// ------------------------------------------function tools--------------------------------------------------
+
+// sort published 
+export function sortArray(res) {
+    var dic = {};
+    for (let i = 0; i < res.posts.length; ++i) {
+        let published = res.posts[i].meta.published;
+        dic[i] = parseInt(published);
+    }
+    var res2 = Object.keys(dic).sort(function (a, b) { return dic[b] - dic[a]; });
+    return res2;
+}
+
+export function checkLocalStore(key) {
+    if (window.localStorage) {
+        console.log(window.localStorage.getItem(key));
+        return window.localStorage.getItem(key);
+    } else {
+        return null
+    }
+}
+
+
+function time2time(Time) {
+    const unixTime = new Date(Time * 1000);
+    return unixTime.toLocaleString('en-AU');
+}
+
+
+export function createElement(tag, data, options = {}) {
+    const ele = document.createElement(tag);
+    ele.textContent = data;
+    return Object.entries(options).reduce(
+        (element, [field, value]) => {
+            element.setAttribute(field, value);
+            return element;
+        }, ele);
+}
+
+// ---------------------------------------------------------------------------------------------------

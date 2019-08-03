@@ -85,6 +85,16 @@ footer {
   font-weight: bold;
 }
 
+.post-Bnt {
+  border: 1px solid var(--reddit-blue);
+  border-radius: 4px;
+  text-transform: uppercase;
+  padding: 7.5px 15px;
+  font-weight: bold;
+  background-color: var(--reddit-blue);
+  margin-left: 150px;
+}
+
 .button-primary {
   color: var(--reddit-blue);
 }
@@ -229,8 +239,8 @@ button:hover {
 .post-image {
  clear: both;
  display: block;
-  width: 580px;
-  height: 580px;
+  width: 650px;
+  height: 650px;
 }
 
 .post-upvote{
@@ -323,3 +333,44 @@ button:hover {
     font-family: "Lucida Console", Monaco, monospace;
 }
 
+
+.modal-window {
+  padding: 10px 20px;
+}
+
+.modal-window {
+  background-color: #f4f4f4;
+  margin: 20% auto;
+  width: 70%;
+  box-shadow: 0 5p 8px 0 rgba(0, 0, 0, 0.2), 0 7px 20px 0 rgba(0, 0, 0, 0.17);
+  animation-name: modalopen;
+  animation-duration: 0.7s;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+  /* background-color: rgba(0, 0, 0, 0.5); */
+}
+.upvote-name{
+text-align:center;
+}
+
+
+@keyframes modalopen {
+  from { opacity: 0 }
+  to { opacity: 1 }
+}
+
+.closeBtn {
+  color: #ccc;
+  float: right;
+  font-size: 30px;
+  color: #fff;
+}
+
+.profile_and_butto{
+  display: inline;
+}
