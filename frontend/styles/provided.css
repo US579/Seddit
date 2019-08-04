@@ -95,6 +95,7 @@ footer {
   margin-left: 150px;
 }
 
+
 .button-primary {
   color: var(--reddit-blue);
 }
@@ -239,10 +240,18 @@ button:hover {
 .post-image {
  clear: both;
  display: block;
-  width: 650px;
-  height: 650px;
+  /* width: 650px;
+  height: 650px; */
+   width: 100%; 
+    height: auto;
 }
 
+
+.post-input{
+ border-color: #66afe9;
+    outline: 0;
+    width:100px;
+}
 .post-upvote{
   margin: 0;
   padding: 0;
@@ -258,6 +267,16 @@ button:hover {
     max-height: 40px;
     padding: 10px 27px;
     margin: 0 auto;
+}
+
+.post-Bnt-1 {
+  border: 1px solid var(--reddit-blue);
+  border-radius: 4px;
+  text-transform: uppercase;
+  padding: 7.5px 15px;
+  font-weight: bold;
+  background-color: var(--reddit-blue);
+  margin-left: 450px;
 }
 
 .post-padding {
@@ -374,3 +393,16 @@ text-align:center;
 .profile_and_butto{
   display: inline;
 }
+
+
+.post-to-db {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 150px; /* Location of the box */
+  left: 0;
+  top: 0;
+  overflow: auto; /* Enable scroll if needed */
+  background-color :gray
+}
+

@@ -93,7 +93,7 @@ export function pgswitch(option = 0) {
 
 
 export function loginToBack() {
-    var signup_url = "http://127.0.0.1:5003/auth/login"
+    var signup_url = "http://127.0.0.1:5000/auth/login"
     var username = document.getElementById('login-username').value;
     var password = document.getElementById('login-password').value;
     if ((!username) || (!password)) {
@@ -149,7 +149,7 @@ function hidebutton() {
 
 
 export function signupToBack() {
-    var signup_url = "http://127.0.0.1:5003/auth/signup"
+    var signup_url = "http://127.0.0.1:5000/auth/signup"
     var submit = document.getElementById("signup_submit");
     submit.onclick = function () {
         var username = document.getElementById('signup-username').value;
@@ -191,8 +191,6 @@ export function signupToBack() {
     }
 }
 
-
-
 //--------------------------------------------------------------------------------------------------------
 
 
@@ -210,7 +208,7 @@ export function signupToBack() {
 //------------------------------------- display user feed when login  (cotains profiles)-------------------------------------
 // getUserProfile(checkLocalStore("token"))
 export async function getUserFeed(token) {
-    var profile_url = "http://127.0.0.1:5003/user/"
+    var profile_url = "http://127.0.0.1:5000/user/"
     await fetch(profile_url, {
         method: 'GET',
         headers: {
@@ -229,7 +227,7 @@ export async function getUserFeed(token) {
         })
     }
 function fetchUserFeed() {
-    const feed_url = "http://127.0.0.1:5003/user/feed";
+    const feed_url = "http://127.0.0.1:5000/user/feed";
     fetch(feed_url, {
         method: 'GET',
         headers: {
@@ -278,7 +276,6 @@ export function createPageFeed(post,option=1) {
 
     section.appendChild(createElement("h5", post.title, { class: "post-title", id: "post-title-id" + post.id }));
     section.appendChild(createElement("h5", post.text, { class: "post-content", id: "post-content-id" + post.id }));
-
     if (post.image != null) {
         section.appendChild(createElement('img', null, { src: 'data:image/png;base64,' + post.image, class: 'post-image', id: 'post-image' + post.id, float: "" }));
     }
@@ -289,7 +286,7 @@ export function createPageFeed(post,option=1) {
         { src: '/src/icon/up.png', alt: 'Likes', class: 'post-button', style: "cursor:pointer" });
 
     //增加like计数
-    console.log(post.id)
+    // console.log(post.id)
     likeicon.addEventListener('click', () => thumbsup(post.id));
     section.appendChild(likeicon);
    
@@ -349,7 +346,7 @@ export function createPageFeed(post,option=1) {
 // thumbsup function 
 function thumbsup(id){
     alert(id);
-    let thumbsup_url = "http://127.0.0.1:5003/post/vote?id="+id;
+    let thumbsup_url = "http://127.0.0.1:5000/post/vote?id="+id;
     fetch(thumbsup_url, {
         method: 'PUT',
         headers: {
@@ -382,16 +379,101 @@ function thumbsup(id){
 // }
 
 
+//-------post function-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+// new  post function
+export function newPost(){
+    // alert("hahahah")
+    // before read image clean the img store in the localstorge
+    window.localStorage.setItem('postimg',0);
+    // listen on the file uploader and store the image in the localstorge
+    fileLoaderlistener();
+    // console.log(checkLocalStore("postimg"))
+    let post_Bnt = document.getElementById("post-Bnt");
+    post_Bnt.onclick = function () {
+       
+        let text = document.getElementById("description")
+        let title = document.getElementById("post-title")
+        let subseddit = document.getElementById("post-sub-seddit")
+        if (!text.value || !title.value){
+            alert("description and title must be non empty ")
+            return false;
+        }
+        console.log(checkLocalStore("postimg"))
+        if (checkLocalStore("postimg")=="0"){
+            const content = {
+                "title": title.value,
+                "text": text.value,
+                "subseddit": subseddit.value,
+            };
+            post_request(content);
+        }else{
+            const content = {
+                "title": title.value,
+                "text": text.value,
+                "subseddit": subseddit.value,
+                "image": checkLocalStore("postimg")
+            };
+            post_request(content);
+        }
+    }
+}
+
+//sub function to request
+function post_request(content){
+    let post_url = "http://127.0.0.1:5000/post/";
+    fetch(post_url, {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': 'Token ' + checkLocalStore("token")
+        },
+        body: JSON.stringify(content),
+    })
+        .then(res => res.json())
+        .then(function (res) {
+            if (res.post_id) {
+                alert("you have posted successfully")
+            }
+        })
+}
+
+// sub function to post 
+function fileLoaderlistener(){
+    let fileUpload = document.getElementById("file_upload");
+    fileUpload.addEventListener("change", (event) => {
+        alert("post new ")
+        const [file] = event.target.files;
+        const validFileTypes = ['image/png']
+        const validType = validFileTypes.find(type => type === file.type);
+        if (!validType) {
+            alert("img must be PNG");
+            return false;
+        }
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (e) => {
+            // alert("hhaha")
+            let content = e.target.result.split(',')[1]
+            window.localStorage.setItem('postimg',content);
+        }
+    })
+}
+
+
+//---------------------------------------------------------------------------------------------------------------------------------------post function--------------------------------------------------------------------------------
+
+
 // delete post function
-// problem   依旧存在问题 返回 400
 function deletePost(id){
-    alert(id);
-    let thumbsup_url = "http://127.0.0.1:5003/post/?id=" + id;
+    let thumbsup_url = "http://127.0.0.1:5000/post/?id=" + id;
     console.log(checkLocalStore("token"))
-    console.log("http://127.0.0.1:5003/post/?id=" + id)
+    console.log("http://127.0.0.1:5000/post/?id=" + id)
     console.log("Token " + checkLocalStore("token"))
+
     fetch(thumbsup_url, {
-        method: 'POST',
+        method: 'DELETE',
         headers: {
             "accept": "application/json",
             "Authorization": "Token " + checkLocalStore("token")
@@ -402,7 +484,7 @@ function deletePost(id){
             alert("delete")
             console.log(res)
             if (res.message === "success") {
-                alert("post has been deleted")
+                alert("Post has been deleted")
             } else {
                 if (res.message === "Internal Server Error") {
                     alert('can not like yourself')
@@ -424,9 +506,9 @@ export function upvote_list(list,id){
     upvote_div.onclick= function() {
         upvote_div.style.display="none";
     }
-    console.log(list)
+    // console.log(list)
     for (let i = 0 ;i< list.length ; ++i){
-    const upvote_url = "http://127.0.0.1:5003/user/?id=" + list[i];
+    const upvote_url = "http://127.0.0.1:5000/user/?id=" + list[i];
     fetch(upvote_url,{
         method:'GET',
         headers: {
@@ -442,8 +524,6 @@ export function upvote_list(list,id){
     }
     return upvote_div; 
 }
-
-
 
 
 // create comment elements and return 
@@ -471,8 +551,8 @@ function commentGenerator(id, comment) {
 //------------------------------------- display user post when login -------------------------------------
 // getUserProfile(checkLocalStore("token"))
 export async function getUserPost(token) {
-    var profile_url = "http://127.0.0.1:5003/user/"
-    // var profile_url = "http://127.0.0.1:5003/user/?id=3"
+    var profile_url = "http://127.0.0.1:5000/user/"
+    // var profile_url = "http://127.0.0.1:5000/user/?id=3"
     await fetch(profile_url, {
         method: 'GET',
         headers: {
@@ -502,7 +582,7 @@ export async function getUserPost(token) {
 }
 
 function fetchUserPost(id) {
-    const feed_url = "http://127.0.0.1:5003/post/?id=" + id;
+    const feed_url = "http://127.0.0.1:5000/post/?id=" + id;
     fetch(feed_url, {
         method: 'GET',
         headers: {
@@ -526,8 +606,11 @@ function fetchUserPost(id) {
 
 function postGenerator(){
     let postDIv = createElement("div",null,{id:"Post-to-db",class:"post-to-db"})
-    postDIv.appendChild(createElement("input", null, { type: "file", id: "file_upload", placeholder:"Enter your description here"}));
-    postDIv.appendChild(createElement("input", null, { id: "decription", placeholder: "Enter your description here",}));
+    // postDIv.appendChild(createElement("span", , { type: "file", class: "inputfile", id: "file_upload", placeholder: "Enter your description here" }));
+    postDIv.appendChild(createElement("input", null, { type: "file", class:"inputfile",id: "file_upload", placeholder:"Enter your description here"}));
+    postDIv.appendChild(createElement("input", null, { id: "post-title",class:"post-input",placeholder: "Enter your title here",}));
+    postDIv.appendChild(createElement("input", null, { id: "description", class: "post-input", placeholder: "Enter your description here", }));
+    postDIv.appendChild(createElement("input", null, { id: "post-sub-seddit", class: "post-input", placeholder: "Enter your subseddit here", }));
     postDIv.appendChild(createElement("button", "Post", { class: "post-Bnt", id: "post-Bnt", style: "cursor:pointer" }));
     // test for post button
     return postDIv;
@@ -537,9 +620,9 @@ function postGenerator(){
 // user post : 2
 function profileGenerator(res,option) {
     let profile = createElement("div", null, { id: "profile-" + res.id, class: "profile" })
-    // if (option===2){
-    // profile.appendChild(createElement("button", "Post", { class: "post-Bnt", id: "post-Bnt", style: "cursor:pointer" }));
-    // }
+    if (option===2){
+    profile.appendChild(createElement("button", "Post", { class: "post-Bnt-1", id: "post-Bnt-1", style: "cursor:pointer" }));
+    }
     profile.appendChild(createElement("div", res.name, { class: "profile-name" }))
    
     // console.log(res.following)

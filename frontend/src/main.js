@@ -22,7 +22,8 @@ function initApp(apiUrl) {
   myModule.addCloseListener(3, "", "");
 
   onBut3.addEventListener("click",(event)=>{
-    init.addPost("us579", "us579as");
+    // init.addPost("us579", "us579as");
+    alert("you have not loged in")
   })
 
   // frontfeed show 
@@ -47,6 +48,9 @@ signup.addEventListener("click", (event) => {
 const get_post = document.getElementById("my_profile");
   get_post.addEventListener("click",(event)=>{
   addListener();
+
+
+
 })
 //  display user's feed
 const get_feed= document.getElementById("Home");
@@ -54,15 +58,28 @@ const get_feed= document.getElementById("Home");
   myModule.getUserFeed(myModule.checkLocalStore("token"));
 })
 
+// // post new contents
+
 
 async function addListener() {
-    alert("dasdasdasd")
+    // alert("dasdasdasd")
     await myModule.getUserPost(myModule.checkLocalStore("token"));
-    let post_button = document.getElementById("post-Bnt")
-    console.log(post_button);
-    post_button.addEventListener("click", (event) => {
-      alert("this is the entrance to post to db not finish")
-    })
+    // let post_button = document.getElementById("post-Bnt")
+    // console.log(post_button);
+    await myModule.newPost();
+    // alert("this is the entrance to post to db not finish")
+    //--------------for modal of post button-----------------
+    let modal = document.getElementById("Post-to-db");
+    let btn = document.getElementById("post-Bnt-1");
+    btn.onclick = function () {
+      modal.style.display = "block";
+    }
+    window.onclick = function (event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+    //--------------for modal of post button-----------------
   }
 
 
