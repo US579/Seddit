@@ -65,33 +65,6 @@ export function pgswitch(option = 0) {
 
 
 
-
-// model window
-
-// var modal = document.getElementById('simpleModal');
-// var modalBtn = document.getElementById('modalBtn');
-// var closeBtn = document.getElementsByClassName('closeBtn')[0];
-// modalBtn.addEventListener('click', openModal);
-// closeBtn.addEventListener('click', closeModal);
-
-// window.addEventListener('click', outsideClick);
-
-// function openModal() {
-//     modal.style.display = "block";
-// }
-
-// function closeModal() {
-//     modal.style.display = 'none';
-// }
-
-// function outsideClick(e) {
-//     if (e.target == modal) {
-//         modal.style.display = 'none';
-//     }
-// }
-
-
-
 export function loginToBack() {
     var signup_url = "http://127.0.0.1:5000/auth/login"
     var username = document.getElementById('login-username').value;
@@ -197,16 +170,7 @@ export function signupToBack() {
 
 
 
-
-
-
-
-
-
-
-
 //------------------------------------- display user feed when login  (cotains profiles)-------------------------------------
-// getUserProfile(checkLocalStore("token"))
 export async function getUserFeed(token) {
     var profile_url = "http://127.0.0.1:5000/user/"
     await fetch(profile_url, {
@@ -226,6 +190,9 @@ export async function getUserFeed(token) {
             fetchUserFeed();
         })
     }
+
+
+
 function fetchUserFeed() {
     const feed_url = "http://127.0.0.1:5000/user/feed";
     fetch(feed_url, {
@@ -238,11 +205,13 @@ function fetchUserFeed() {
     })
     .then(res => res.json())
     .then(function (res) {
-        console.log(res);
+        // console.log(res);
         // if (res.posts.length === 0) {
         //     feed.appendChild(createElement("div", "Wow,such empty", { class: "empty-feed",id:"empty-feed" }))
         // }
         for (let i = res.posts.length-1; i > -1  ;i--){
+            // console.log(i)
+            // console.log(res.posts.length)
             let content = createPageFeed(res.posts[i]);
             feed.appendChild(content);
         }
@@ -251,6 +220,26 @@ function fetchUserFeed() {
 //--------------------------------------------------------------------------------------------------
 
 
+//------------------------infinte feed
+
+export function infinteScroll() {
+    document.addEventListener("scroll", () => {
+        // alert("scroll")
+        console.log("scroll")
+        const lastNode = document.getElementById("feed").lastChild;
+        if (checkLocalStore("location") === 'feed') {
+            
+            let feedEnd = lastNode.offsetTop + lastNode.clientHeight;
+            
+            let pagPos = window.pageXOffset + window.innerHeight;
+            console.log(pagPos)
+            console.log(feedEnd-20)
+            
+            getUserFeed(checkLocalStore("token"))
+        
+        }
+    }, false)
+}
 
 
 // -------------------------------------------- Post templete  ---------------------------------
@@ -272,6 +261,12 @@ export function createPageFeed(post,option=1) {
     post_front_title.appendChild(auther);
     let time = createElement('h6', postTime, { class: 'post-time', style: "color: rgb(120, 124, 126);" });
     post_front_title.appendChild(time);
+    let follow_button = createElement('img', null, { src: '/src/icon/follow.png',id:'follow_button'+post.id, class: 'follow-button', style: "cursor:pointer" })
+    let unfollow_button = createElement('img', null, { src: '/src/icon/unfollow.png', id: 'unfollow_button' + post.id, class: 'follow-button', style: "cursor:pointer" })
+    post_front_title.appendChild(follow_button)
+    post_front_title.appendChild(unfollow_button)
+    follow_button.addEventListener("click", () => toFollow(post.meta.author));
+    unfollow_button.addEventListener("click", () => tounFollow(post.meta.author));
     section.appendChild(post_front_title);
 
     section.appendChild(createElement("h5", post.title, { class: "post-title", id: "post-title-id" + post.id }));
@@ -292,8 +287,8 @@ export function createPageFeed(post,option=1) {
    
     //comment button
     let comment_button = createElement('img', null, { src: '/src/icon/comment.png', alt: 'Comments', class: 'post-button', style: "cursor:pointer" })
+   
     section.appendChild(comment_button);
-
 
     // add event listener to the comment_button
     comment_button.addEventListener('click', () => {
@@ -303,11 +298,11 @@ export function createPageFeed(post,option=1) {
             document.getElementById("post-comments-div-" + post.id).style.display = "block";
         }
     });
+
     //delete button
     let delete_post_button = createElement('img', null, { src: '/src/icon/delete.png', id:"delete-post",alt: 'delete', class: 'post-button', style: "cursor:pointer" })
     section.appendChild(delete_post_button);
     delete_post_button.addEventListener('click', () => deletePost(post.id));
-
 
     // upvote tag
     let upvote_button = createElement('img', null, { src: '/src/icon/upvote.png', alt: 'upvote', class: 'post-button', style: "cursor:pointer", id: "upvote-name-" + post.id })
@@ -331,16 +326,81 @@ export function createPageFeed(post,option=1) {
     section.appendChild(createElement('h6', post.meta.upvotes.length, { "data-id-upvotes": "", class: "post_count_num", id: "likes-num" + post.id }));
     section.appendChild(createElement('h6', post.comments.length, { class: "post_count_num", id: "comment-num" + post.id }));
     section.appendChild(createElement('h6', null, { class: "post-padding" }));
+    section.appendChild(createElement("input", null, { class: "comment_add_input", placeholder: "Enter your comment here", id: "comment-add-input-" + post.id }))
+    
+    let comment_add_button = createElement("button", "add", { class: "comment_add_button", style: "cursor:pointer", id: "comment-add-button-" + post.id })
+    section.appendChild(comment_add_button);
+    comment_add_button.addEventListener("click",()=>addcomment(post.id));
+
+
+    section.appendChild(createElement('h6', null, { class: "post-padding" }));
     if (post.comments.length > 0) {
         section.appendChild(commentGenerator(post.id, post.comments))
+
     } else {
-        section.appendChild(createElement("div", "No Comments Yet", { class: "post-comments-div", style: "display: none;", id: "post-comments-div-" + post.id }))
+        let div_comment = createElement("div", null, { class: "post-comments-div", style: "display:none;", id: "post-comments-div-" + post.id })
+        div_comment.appendChild(createElement("div", "No Comments Yet", { class: "post-comments-div", style: "display: none;", id: "post-comments-div-" + post.id}));
+        section.appendChild(div_comment)
     }
+    // comment_button.addEventListener('click', () => addcomment(post.id));
     return section;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+
+//follow function
+function toFollow(username){
+    let follow_url = "http://127.0.0.1:5000/user/follow?username="+username;
+    fetch(follow_url, {
+        method: 'PUT',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': 'Token ' + checkLocalStore("token")
+        },
+    })
+    .then(res=>res.json())
+    .then(function(res){
+        if (checkLocalStore("token")){
+            if (checkLocalStore("username")===username){
+                alert("you can not follow yourself")
+                return false;
+            }
+            alert("follow successfully!");
+            document.getElementById("my_profile").click();
+        }else{
+            alert("you have to login first");
+        } 
+    })
+}
+
+//unfollow function
+function tounFollow(username) {
+    let unfollow_url = "http://127.0.0.1:5000/user/unfollow?username=" + username;
+    fetch(unfollow_url, {
+        method: 'PUT',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': 'Token ' + checkLocalStore("token")
+        },
+    })
+        .then(res => res.json())
+        .then(function (res) {
+            // console.log(res)
+            if (checkLocalStore("token")) {
+                if (checkLocalStore("username") === username) {
+                    alert("you can not follow yourself")
+                    return false;
+                }
+                alert("unfollow successfully!");
+                document.getElementById("my_profile").click();
+            } else {
+                alert("you have to login first");
+            } 
+        })
+}
 
 
 // thumbsup function 
@@ -373,13 +433,7 @@ function thumbsup(id){
 }
 
 
-// //follow function
-// function follow(){
-
-// }
-
-
-//-------post function-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//---------------------------------post function-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 // new  post function
 export function newPost(){
@@ -434,6 +488,7 @@ function post_request(content){
         .then(res => res.json())
         .then(function (res) {
             if (res.post_id) {
+                document.getElementById("my_profile").click();
                 alert("you have posted successfully")
             }
         })
@@ -443,7 +498,6 @@ function post_request(content){
 function fileLoaderlistener(){
     let fileUpload = document.getElementById("file_upload");
     fileUpload.addEventListener("change", (event) => {
-        alert("post new ")
         const [file] = event.target.files;
         const validFileTypes = ['image/png']
         const validType = validFileTypes.find(type => type === file.type);
@@ -461,17 +515,62 @@ function fileLoaderlistener(){
     })
 }
 
-
 //---------------------------------------------------------------------------------------------------------------------------------------post function--------------------------------------------------------------------------------
 
+// ----------------------------------------------------------------- add comment ----------------------------------------------------------------------------------
 
-// delete post function
+async function addcomment(id){
+    let addcomment_url = "http://127.0.0.1:5000/post/comment?id="+id;
+    let comments_content = document.getElementById("comment-add-input-" + id)
+    const comments = {
+        "comment": comments_content.value,
+    };
+    // console.log(comments)
+    // console.log(addcomment_url)
+    // console.log(checkLocalStore("token"))
+    await fetch(addcomment_url, {
+        method: 'PUT',
+        headers: {
+            'Accept': 'application/json',
+            'Authorization': 'Token ' + checkLocalStore("token"),
+            'Content-Type': 'application/json',
+            
+        },
+        body: JSON.stringify(comments),
+    })
+    .then(res=>res.json())
+    .then(function(res){
+         // insert from here 
+        let comment_div = document.getElementById("post-comments-div-" + id);
+        // console.log(res)
+        var myDate= new Date();
+        // console.log(myDate)
+
+        if (checkLocalStore("token")){
+            comment_div.insertBefore(createElement("h4", comments_content.value, { class: "post-comments-content", }),comment_div.firstChild);
+            comment_div.insertBefore(createElement("span", "   " + myDate.toLocaleString(), { class: "post-comments-time", style: "color: rgb(120, 124, 126);" }), comment_div.firstChild)
+            comment_div.insertBefore(createElement("span", checkLocalStore("username"), { class: "post-comments-author", }), comment_div.firstChild)
+            comment_div.insertBefore(createElement("span", "* Posted by @ ", { class: "post-comments-postby", style: "color: rgb(120, 124, 126);" }),comment_div.firstChild)
+            let comment_num = document.getElementById("comment-num" + id);
+            comment_num.innerText = parseInt(document.getElementById("comment-num" + id).innerText) + 1;
+        }else{
+            // console.log(checkLocalStore("token"))
+            alert("you have to login first !")
+        }
+    } ) 
+}
+
+
+
+
+
+//  ----------------------------------------------------------------- add comment -------------------------------------------------------------------------
+
+
+
+// ---------------------------------------------------------------delete post function------------------------------------------------------------------------------------------------------
 function deletePost(id){
     let thumbsup_url = "http://127.0.0.1:5000/post/?id=" + id;
-    console.log(checkLocalStore("token"))
-    console.log("http://127.0.0.1:5000/post/?id=" + id)
-    console.log("Token " + checkLocalStore("token"))
-
     fetch(thumbsup_url, {
         method: 'DELETE',
         headers: {
@@ -481,14 +580,19 @@ function deletePost(id){
     })
         .then(res => res.json())
         .then(function (res) {
-            alert("delete")
-            console.log(res)
+            // alert("delete")
+            // console.log(res)
             if (res.message === "success") {
+                document.getElementById("my_profile").click();
                 alert("Post has been deleted")
+            }
+            else if (res.message === "You Are Unauthorized To Make That Request") {
+                alert("you are not permmit to delete others post")
+                return false;
             } else {
                 if (res.message === "Internal Server Error") {
                     alert('can not like yourself')
-                    return;
+                    return false;
                 }
                 alert("delete failed")
             }
@@ -528,14 +632,14 @@ export function upvote_list(list,id){
 
 // create comment elements and return 
 function commentGenerator(id, comment) {
-    var div_comment = createElement("div", null, { class: "post-comments-div", style: "display:none;", id: "post-comments-div-" + id })
-    // console.log(comment.length)
-    // console.log(comment)
+    let div_comment = createElement("div", null, { class: "post-comments-div", style: "display:none;", id: "post-comments-div-" + id })
+    // div_comment.appendChild(createElement("input", null, { class: "comment_add_input", style: "display:inline;", placeholder: "Enter your comment here", id: "comment-add-input-" + id }))
+    // div_comment.appendChild(createElement("button", "add", { class: "comment_button_input", style: "cursor:pointer", id: "comment-add-button-" + id }))
+    // div_comment.appendChild(createElement('h6', null, { class: "post-padding" }));
     for (let i = 0; i < comment.length; ++i) {
         // console.log(comment[i])
         div_comment.appendChild(createElement("span", "* Posted by @ ", { class: "post-comments-postby", style: "color: rgb(120, 124, 126);" }))
         div_comment.appendChild(createElement("span", comment[i].author, { class: "post-comments-author", }))
-
         div_comment.appendChild(createElement("span", "   " + time2time(comment[i].published), { class: "post-comments-time", style: "color: rgb(120, 124, 126);" }))
         div_comment.appendChild(createElement("h4", comment[i].comment, { class: "post-comments-content", }));
     }
@@ -561,22 +665,26 @@ export async function getUserPost(token) {
             'Authorization': 'Token ' + token
         },
     })
-        //  .then(alert("asdasdas"))
+
         .then(res => res.json())
         .then(function (res) {
-            // console.log(res)
             let profile = profileGenerator(res,2);
             feed.innerHTML = "";
             feed.appendChild(profile)
             feed.appendChild(postGenerator());
+
             // if (res.following.length === 0) {
             //     feed.appendChild(createElement("div", "Wow,such empty", { class: "empty-feed" }))
             // }
             // let buttonTag3 = createElement("button", "Post", { class: "button button-secondary", id: "post-button", style: "cursor:pointer" })
             // feed.appendChild(buttonTag3);
-            for (let i = res.posts.length-1; i != 0; i--) {
-                // console.log(res.following[i])
-                fetchUserPost(res.posts[i]);
+            if (res.posts.length > 0) {
+                // console.log(res.posts.length )
+                for (let i = res.posts.length - 1; i != -1; i--) {
+                    console.log(i)
+                    // console.log(res.following[i])
+                    fetchUserPost(res.posts[i]);
+                } 
             }
         })
 }
@@ -624,17 +732,18 @@ function profileGenerator(res,option) {
     profile.appendChild(createElement("button", "Post", { class: "post-Bnt-1", id: "post-Bnt-1", style: "cursor:pointer" }));
     }
     profile.appendChild(createElement("div", res.name, { class: "profile-name" }))
-   
     // console.log(res.following)
     profile.appendChild(createElement("b", "Following: " + res.following.length, { class: "profile-following" }))
     profile.appendChild(createElement("b", "Upvotes: " + res.followed_num, { class: "profile-upvotes" }))
     profile.appendChild(createElement("b", "Followed: " + res.followed_num, { class: "profile-followed" }))
     profile.appendChild(createElement("b", "Posts: " + res.posts.length, { class: "profile-posts" }))
     return profile;
-
 }
 
 //--------------------------------------------------------------------------------------------------------------
+
+
+
 
 
 
@@ -655,7 +764,7 @@ export function sortArray(res) {
 
 export function checkLocalStore(key) {
     if (window.localStorage) {
-        console.log(window.localStorage.getItem(key));
+        // console.log(window.localStorage.getItem(key));
         return window.localStorage.getItem(key);
     } else {
         return null

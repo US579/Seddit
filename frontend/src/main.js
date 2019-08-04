@@ -48,15 +48,27 @@ signup.addEventListener("click", (event) => {
 const get_post = document.getElementById("my_profile");
   get_post.addEventListener("click",(event)=>{
   addListener();
-
-
-
+  window.localStorage.setItem("location", "profile");
 })
 //  display user's feed
 const get_feed= document.getElementById("Home");
   get_feed.addEventListener("click", (event) => {
   myModule.getUserFeed(myModule.checkLocalStore("token"));
+  window.localStorage.setItem("location","feed");
+  myModule.infinteScroll();
 })
+
+async function showFeed(){
+  await myModule.getUserFeed(myModule.checkLocalStore("token"));
+  // implemete scrool
+  document.addEventListener("scroll",()=>{
+    const feedLast = document.getElementById("feed").lastChild;
+})
+  
+
+
+
+}
 
 // // post new contents
 
@@ -66,8 +78,8 @@ async function addListener() {
     await myModule.getUserPost(myModule.checkLocalStore("token"));
     // let post_button = document.getElementById("post-Bnt")
     // console.log(post_button);
-    await myModule.newPost();
-    // alert("this is the entrance to post to db not finish")
+    myModule.newPost();
+    
     //--------------for modal of post button-----------------
     let modal = document.getElementById("Post-to-db");
     let btn = document.getElementById("post-Bnt-1");
