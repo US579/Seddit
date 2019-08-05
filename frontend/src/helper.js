@@ -270,6 +270,13 @@ export function createPageFeed(post, option = 1) {
     section.appendChild(post_front_title);
 
     section.appendChild(createElement("h5", post.title, { "data-id-title": "", class: "post-title", id: "post-title-id" + post.id }));
+
+    if (option === 3) {
+        let editButton = createElement("button", "edit", { "data-id-title": "", class: "post-title-button", id: "post-title-id" + post.id });
+        section.appendChild(editButton)
+        editButton.addEventListener("click", () => addListeningToeditBbutton(post.id));
+    }
+
     section.appendChild(createElement("h5", post.text, { class: "post-content", id: "post-content-id" + post.id }));
     if (post.image != null) {
         section.appendChild(createElement('img', null, { src: 'data:image/png;base64,' + post.image, class: 'post-image', id: 'post-image' + post.id, float: "" }));
@@ -355,6 +362,134 @@ export function createPageFeed(post, option = 1) {
     }
     return section;
 }
+
+
+
+async function addListeningToeditBbutton(id) {
+    let modal = document.getElementById("post-change-div");
+    console.log(id)
+    modal.style.display = "block";
+    window.onclick = function (event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        } else if (event.target == modal) {
+            modal2.style.display = "none";
+        }
+    }
+    let post_change_Bnt = document.getElementById("post-change-Bnt");
+    post_change_Bnt.addEventListener("click", (event) => {
+    //  updatePost(id);
+    // // console.log(checkLocalStore("postimg_update"))
+    // postChangeRequest(id, checkLocalStore("postimg_update"))
+    asyFun(id);
+    //     document.getElementById("my_profile").click();
+        
+    })
+}
+
+async function asyFun(id){
+    console.log(id)
+    await updatePost(id);
+    // postChangeRequest(id, checkLocalStore("postimg_update"))
+    
+}
+
+function updatePost(id) {
+    alert("1")
+    let file= document.getElementById("post-change-img").files[0];
+    console.log(file)
+    // let resultFile = document.getElementById("fileDemo")
+        // const [file] = event.target.files;
+        const validFileTypes = ['image/png']
+        const validType = validFileTypes.find(type => type === file.type);
+        if (!validType) {
+            alert("img must be PNG");
+            return false;
+        }
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        alert("{{{{{")
+        reader.onload = (e) => {
+            // alert("hhaha")
+        alert("11111")
+        let content = e.target.result.split(',')[1]
+        console.log(content)
+        // window.localStorage.setItem('postimg_update', content);
+        let title = document.getElementById("post-change-title").value
+        let text = document.getElementById("post-change-text").value
+        let subseddit = document.getElementById("post-change-subseddit").value
+        console.log(title)
+        console.log(text)
+        console.log(subseddit)
+        console.log(id)
+        const payload = {
+            "title": title,
+            "text": text,
+            "subseddit": subseddit,
+            "image": content
+        }
+        console.log(payload)
+        let post_change_url = "http://127.0.0.1:5000/post/?id=" + id;
+        // console.log(payload)
+        fetch(post_change_url, {
+            method: "PUT",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Token ' + checkLocalStore("token")
+            },
+            body: JSON.stringify(payload),
+        })
+            .then(res => res.json())
+            .then(function (res) {
+                if (res) {
+                    document.getElementById("my_profile").click();
+                    alert("you have change post successfully")
+                }
+            })
+        }
+        
+}
+
+// function postChangeRequest(id,content) {
+//     alert("2222")
+//     let title = document.getElementById("post-change-title").value
+//     let text = document.getElementById("post-change-text").value
+//     let subseddit = document.getElementById("post-change-subseddit").value
+//     console.log(title)
+//     console.log(text)
+//     console.log(subseddit)
+//     console.log(id)
+//     const payload = {
+//         "title": title,
+//         "text": text,
+//         "subseddit": subseddit,
+//         "image": content
+//     }
+//     console.log(payload)
+//     let post_change_url = "http://127.0.0.1:5000/post/?id="+id;
+//     console.log(payload)
+//     fetch(post_change_url, {
+//         method: "PUT",
+//         headers: {
+//             'Accept': 'application/json',
+//             'Content-Type': 'application/json',
+//             'Authorization': 'Token ' + checkLocalStore("token")
+//         },
+//         body: JSON.stringify(payload),
+//     })
+//         .then(res => res.json())
+//         .then(function (res) {
+//             if (res) {
+//                 document.getElementById("my_profile").click();
+//                 alert("you have change post successfully")
+//             }
+//         })
+// }
+
+
+
+
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // sub-function to check whether user thumbs up or not
@@ -786,6 +921,9 @@ export async function getUserPost(token) {
                 }
             }
         })
+        .then(function (res) {
+            feed.appendChild(updatePostGenerator());
+        })
 }
 
 function fetchUserPost(id) {
@@ -801,7 +939,7 @@ function fetchUserPost(id) {
         .then(res => res.json())
         .then(function (res) {
             // console.log(res);
-            let content = createPageFeed(res);
+            let content = createPageFeed(res,3);
             // console.log(content)
             // console.log(res.meta)
             // document.getElementById("feed").appendChild(postGenerator());
@@ -833,6 +971,19 @@ function updateProfileGenerator() {
     // test for post button
     return postDIv;
 }
+
+function updatePostGenerator() {
+    let postDIv = createElement("div", null, { id: "post-change-div", class: "post-to-db" })
+    // postDIv.appendChild(createElement("span", , { type: "file", class: "inputfile", id: "file_upload", placeholder: "Enter your description here" }));
+    postDIv.appendChild(createElement("input", null, { id: "post-change-title", class: "post-input", placeholder: "change your title here", }));
+    postDIv.appendChild(createElement("input", null, { id: "post-change-text", class: "post-input", placeholder: "change your description here", }));
+    postDIv.appendChild(createElement("input", null, { id: "post-change-subseddit", class: "post-input", placeholder: "change subseddit here", }));
+    postDIv.appendChild(createElement("input", null, { type: "file", id: "post-change-img", class: "post-input", placeholder: "change your imge here", }));
+    postDIv.appendChild(createElement("button", "Change", { class: "post-Bnt", id: "post-change-Bnt", style: "cursor:pointer" }));
+    // test for post button
+    return postDIv;
+}
+
 
 // user feed : 1
 // user post : 2
@@ -928,7 +1079,7 @@ export async function upvoteCaculator(id) {
         .then(res => res.json())
         .then(function (res) {
             for (let i = 0; i < res.posts.length; i++) {
-                console.log(res.posts[i])
+                // console.log(res.posts[i])
                 getUpvoteNum(res.posts[i])
                 likenum += nummm;
             }
@@ -946,7 +1097,7 @@ async function getUpvoteNum(id) {
     })
         .then(res => res.json())
         .then(function (res) {
-            console.log(res.meta.upvotes.length)
+            // console.log(res.meta.upvotes.length)
             nummm = res.meta.upvotes.length
         })
 

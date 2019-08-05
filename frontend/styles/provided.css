@@ -249,7 +249,7 @@ button:hover {
 .default-img{
     width: 150px;
   height: 150px;
-
+  position: relative;
 
 }
 
@@ -305,6 +305,9 @@ button:hover {
   /* font-weight: bold; */
   background-color: var(--reddit-blue);
   margin-top: 5%;
+  top: -5px;
+  POSITION: relative;
+  right: -1%;
 
 }
 
@@ -364,8 +367,10 @@ button:hover {
    font-family: Chalkduster;
    padding-bottom : 35px;
    font-size: 65px;
-   margin-left: 10%;
    margin-bottom: 5%;
+   left: 37%;
+  top: 13%;
+  position: absolute;
 
 }
 
@@ -455,6 +460,13 @@ text-align:center;
   border-color: #66afe9;
    outline: 0;
   -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6);
-  box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6)
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6);
+
 }
 
+
+.post-title-button{
+  display: inline;
+  left: 74%;
+  position: absolute;
+}
