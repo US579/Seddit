@@ -28,15 +28,31 @@ function initApp(apiUrl) {
 
   // frontfeed show 
   anonyFeed();
+  // myModule.searchHighlight();
 
 
   // login 
   const login = document.getElementById("login_submit");
   login.addEventListener("click", (event) => {
+    alert("sad")
     myModule.loginToBack()
     window.localStorage.setItem("location", "feed")
     myModule.infinteScroll();
     // document.getElementById("my_profile").click();
+    alert("ppppp")
+    document.getElementById("search").οnclick = function () {
+      // 获取关键词
+      alert("search")
+      var pattern = document.getElementById("search_input").value;
+      //定义正则表达式
+      var re = new RegExp(pattern, "g");
+      //获取操作文本对象
+      var searching = document.getElementById("incoming").value;
+      //给文本中的关键词添加样式
+      var resulting = searching.replace(re, "<span class='highLight'>$&</span>");
+      //将结果输出
+      document.getElementById("searchResult").innerHTML = resulting;
+    }
   }
   )
 
@@ -122,6 +138,7 @@ function initApp(apiUrl) {
       document.getElementById("signup_button").style.display = "inline";
 
       //display home myProfile logout  button
+      document.getElementById("search").style.display = "none";
       document.getElementById("Home").style.display = "none";
       document.getElementById("my_profile").style.display = "none";
       document.getElementById("logout_button").style.display = "none";

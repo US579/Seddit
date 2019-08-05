@@ -112,6 +112,7 @@ function hidebutton() {
     document.getElementById("signup-01").style.display = "none";
     document.getElementById("login_button").style.display = "none";
     document.getElementById("signup_button").style.display = "none"
+    document.getElementById("search").style.display = "inline";
     document.getElementById("Home").style.display = "inline";
     document.getElementById("my_profile").style.display = "inline";
     document.getElementById("logout_button").style.display = "inline";
@@ -250,7 +251,7 @@ export function createPageFeed(post, option = 1) {
     let section = createElement('section', null, { "data-id-post": "", class: 'page-feed', id: post.id, style: "display:block;" });
     let post_front_title = createElement("div", null, { class: 'post-front-title' });
 
-    let subreddit = createElement('span', "r/" + post.meta.subseddit + " • ", { class: 'post-subseddit', style: 'cursor:pointer' });
+    let subreddit = createElement('span', "r/" + post.meta.subseddit + " • ", { class: 'post-subseddit', id: "post-subseddit-id" + post.id, style: 'cursor:pointer' });
     post_front_title.appendChild(subreddit);
     let postby = createElement('span', "Posted by @ ", { style: "color: rgb(120, 124, 126);", class: "post-by", id: 'post-by' + post.id });
     post_front_title.appendChild(postby);
@@ -273,7 +274,10 @@ export function createPageFeed(post, option = 1) {
 
     if (option === 3) {
         let editButton = createElement("button", "edit", { "data-id-title": "", class: "post-title-button", id: "post-title-id" + post.id });
+        let editConfirmButton = createElement("button", "confirm", { "data-id-title": "", class: "post-title-button", id: "post-confirm-id" + post.id });
         section.appendChild(editButton)
+        section.appendChild(editConfirmButton)
+        editConfirmButton.addEventListener("click", () => updatePost(post.id));
         editButton.addEventListener("click", () => addListeningToeditBbutton(post.id));
     }
 
@@ -367,7 +371,7 @@ export function createPageFeed(post, option = 1) {
 
 async function addListeningToeditBbutton(id) {
     let modal = document.getElementById("post-change-div");
-    console.log(id)
+    // console.log(id)
     modal.style.display = "block";
     window.onclick = function (event) {
         if (event.target == modal) {
@@ -376,61 +380,54 @@ async function addListeningToeditBbutton(id) {
             modal2.style.display = "none";
         }
     }
-    let post_change_Bnt = document.getElementById("post-change-Bnt");
-    post_change_Bnt.addEventListener("click", (event) => {
-    //  updatePost(id);
-    // // console.log(checkLocalStore("postimg_update"))
-    // postChangeRequest(id, checkLocalStore("postimg_update"))
-    asyFun(id);
-    //     document.getElementById("my_profile").click();
-        
-    })
+    // let post_change_Bnt = document.getElementById("post-change-Bnt");
+    // post_change_Bnt.addEventListener("click", (event) => {
+    //     //  updatePost(id);
+    //     // // console.log(checkLocalStore("postimg_update"))
+    //     // postChangeRequest(id, checkLocalStore("postimg_update"))
+    //     updatePost(id);
+    //     // document.getElementById("my_profile").click();
+    // })
 }
 
-async function asyFun(id){
-    console.log(id)
-    await updatePost(id);
-    // postChangeRequest(id, checkLocalStore("postimg_update"))
-    
-}
+// async function asyFun(id){
+//     console.log(id)
+//     await
+//     // postChangeRequest(id, checkLocalStore("postimg_update"))
+
+// }
+
 
 function updatePost(id) {
-    alert("1")
-    let file= document.getElementById("post-change-img").files[0];
-    console.log(file)
-    // let resultFile = document.getElementById("fileDemo")
-        // const [file] = event.target.files;
-        const validFileTypes = ['image/png']
-        const validType = validFileTypes.find(type => type === file.type);
-        if (!validType) {
-            alert("img must be PNG");
-            return false;
-        }
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        alert("{{{{{")
-        reader.onload = (e) => {
-            // alert("hhaha")
-        alert("11111")
-        let content = e.target.result.split(',')[1]
-        console.log(content)
-        // window.localStorage.setItem('postimg_update', content);
-        let title = document.getElementById("post-change-title").value
-        let text = document.getElementById("post-change-text").value
-        let subseddit = document.getElementById("post-change-subseddit").value
-        console.log(title)
-        console.log(text)
-        console.log(subseddit)
-        console.log(id)
+    let file = document.getElementById("post-change-img").files[0];
+    var c_content ="";
+    const validFileTypes = ['image/png']
+    const validType = validFileTypes.find(type => type === file.type);
+    if (!validType) {
+        alert("img must be PNG");
+        return false;
+    }
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = function () {
+        var c_content = "";
+        c_content = this.result.replace(/^data:image\/.*,/, '');
+        console.log(c_content);
+        var c_title = document.getElementById("post-change-title").value;
+        var c_text = document.getElementById("post-change-text").value;
+        var c_subseddit = document.getElementById("post-change-subseddit").value;
+        if (!c_title) { c_title = document.getElementById("post-title-id" + id).innerText };
+        if (!c_text) { c_text = document.getElementById("post-content-id" + id).innerText };
+        if (!c_subseddit) { c_subseddit = document.getElementById("post-subseddit-id" + id).innerText };
+        // if (!c_image) { c_image = document.getElementById("post-image" + id).src.replace(/^data:image\/.*,/, ''); };
         const payload = {
-            "title": title,
-            "text": text,
-            "subseddit": subseddit,
-            "image": content
+            "title": c_title,
+            "text": c_text,
+            "subseddit": c_subseddit,
+            "image": c_content
         }
-        console.log(payload)
         let post_change_url = "http://127.0.0.1:5000/post/?id=" + id;
-        // console.log(payload)
+        console.log(payload)
         fetch(post_change_url, {
             method: "PUT",
             headers: {
@@ -443,66 +440,25 @@ function updatePost(id) {
             .then(res => res.json())
             .then(function (res) {
                 if (res) {
-                    document.getElementById("my_profile").click();
                     alert("you have change post successfully")
+                    document.getElementById("my_profile").click();
                 }
             })
-        }
-        
+    }
 }
-
-// function postChangeRequest(id,content) {
-//     alert("2222")
-//     let title = document.getElementById("post-change-title").value
-//     let text = document.getElementById("post-change-text").value
-//     let subseddit = document.getElementById("post-change-subseddit").value
-//     console.log(title)
-//     console.log(text)
-//     console.log(subseddit)
-//     console.log(id)
-//     const payload = {
-//         "title": title,
-//         "text": text,
-//         "subseddit": subseddit,
-//         "image": content
-//     }
-//     console.log(payload)
-//     let post_change_url = "http://127.0.0.1:5000/post/?id="+id;
-//     console.log(payload)
-//     fetch(post_change_url, {
-//         method: "PUT",
-//         headers: {
-//             'Accept': 'application/json',
-//             'Content-Type': 'application/json',
-//             'Authorization': 'Token ' + checkLocalStore("token")
-//         },
-//         body: JSON.stringify(payload),
-//     })
-//         .then(res => res.json())
-//         .then(function (res) {
-//             if (res) {
-//                 document.getElementById("my_profile").click();
-//                 alert("you have change post successfully")
-//             }
-//         })
-// }
-
-
 
 
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // sub-function to check whether user thumbs up or not
-function al(id){
-    // console.log("like-num" + id)
-    alert(checkLocalStore("like-num" + id))
-     if (checkLocalStore("like-num"+id)){
-            thumbsdown(id);
-            window.localStorage.removeItem("like-num" + id);
-        } else{
-            alert("you did not thumbs up");
+function al(id) {
+    if (checkLocalStore("like-num" + id)) {
+        thumbsdown(id);
+        window.localStorage.removeItem("like-num" + id);
+    } else {
+        alert("you did not thumbs up");
 
-        }
+    }
 }
 
 
@@ -589,7 +545,6 @@ function tounFollow(username) {
     })
         .then(res => res.json())
         .then(function (res) {
-            // console.log(res)
             if (checkLocalStore("token")) {
                 if (checkLocalStore("username") === username) {
                     alert("you can not follow yourself")
@@ -606,9 +561,7 @@ function tounFollow(username) {
 
 // thumbsup function 
 function thumbsup(id) {
-    alert("thumbs");
-    alert(checkLocalStore("like-num" + id))
-    if (checkLocalStore("like-num"+id)){
+    if (checkLocalStore("like-num" + id)) {
         alert("you have thumbsup alreadly");
         return false;
     }
@@ -623,13 +576,9 @@ function thumbsup(id) {
     })
         .then(res => res.json())
         .then(function (res) {
-            console.log(res)
             if (res.message === "success") {
                 let addlike = document.getElementById("likes-num" + id);
-                alert("likes-num" + id);
-                window.localStorage.setItem("like-num" + id,'1');
-                console.log("likes-num" + id);
-                console.log(checkLocalStore("like-num" + id));
+                window.localStorage.setItem("like-num" + id, '1');
                 addlike.innerText = parseInt(document.getElementById("likes-num" + id).innerText) + 1;
             } else {
                 if (res.message === "Internal Server Error") {
@@ -674,7 +623,6 @@ function thumbsdown(id) {
 
 // new  post function
 export function newPost() {
-    // alert("hahahah")
     // before read image clean the img store in the localstorge
     window.localStorage.setItem('postimg', 0);
 
@@ -903,6 +851,7 @@ export async function getUserPost(token) {
         .then(res => res.json())
         .then(function (res) {
             let profile = profileGenerator(res, 2);
+            let feed = document.getElementById("feed")
             feed.innerHTML = "";
             feed.appendChild(profile)
             feed.appendChild(postGenerator());
@@ -939,7 +888,7 @@ function fetchUserPost(id) {
         .then(res => res.json())
         .then(function (res) {
             // console.log(res);
-            let content = createPageFeed(res,3);
+            let content = createPageFeed(res, 3);
             // console.log(content)
             // console.log(res.meta)
             // document.getElementById("feed").appendChild(postGenerator());
@@ -979,7 +928,7 @@ function updatePostGenerator() {
     postDIv.appendChild(createElement("input", null, { id: "post-change-text", class: "post-input", placeholder: "change your description here", }));
     postDIv.appendChild(createElement("input", null, { id: "post-change-subseddit", class: "post-input", placeholder: "change subseddit here", }));
     postDIv.appendChild(createElement("input", null, { type: "file", id: "post-change-img", class: "post-input", placeholder: "change your imge here", }));
-    postDIv.appendChild(createElement("button", "Change", { class: "post-Bnt", id: "post-change-Bnt", style: "cursor:pointer" }));
+    // postDIv.appendChild(createElement("button", "Change", { class: "post-Bnt", id: "post-change-Bnt", style: "cursor:pointer" }));
     // test for post button
     return postDIv;
 }
@@ -996,7 +945,6 @@ function profileGenerator(res, option) {
     img_name_div.appendChild(createElement('img', null, { src: '/src/icon/default.png', id: "default-img", alt: 'default', class: 'default-img', style: "cursor:pointer" }))
     img_name_div.appendChild(createElement("div", res.name, { class: "profile-name", style: "display:inline" }))
     profile.appendChild(img_name_div)
-    // console.log(res.following)
     let profile_sub_div = createElement("div", null, { class: "profile-sub-div", id: "profile-sub-div" + res.id })
     profile_sub_div.appendChild(createElement("b", "Following: " + res.following.length, { class: "profile-following" }))
 
@@ -1103,3 +1051,20 @@ async function getUpvoteNum(id) {
 
 }
 // ---------------------------------------------------------------------------------------------------
+
+//*************************************************************************** */
+export function searchHighlight(){
+document.getElementById("search").οnclick = function () {
+    // 获取关键词
+    alert("search")
+    var pattern = document.getElementById("search_input").value;
+    //定义正则表达式
+    var re = new RegExp(pattern, "g");
+    //获取操作文本对象
+    var searching = document.getElementById("incoming").value;
+    //给文本中的关键词添加样式
+    var resulting = searching.replace(re, "<span class='highLight'>$&</span>");
+    //将结果输出
+    document.getElementById("searchResult").innerHTML = resulting;
+}
+}

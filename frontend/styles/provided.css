@@ -366,10 +366,10 @@ button:hover {
 .profile-name{
    font-family: Chalkduster;
    padding-bottom : 35px;
-   font-size: 65px;
+   font-size: 44px;
    margin-bottom: 5%;
    left: 37%;
-  top: 13%;
+  top: 18%;
   position: absolute;
 
 }
@@ -467,6 +467,6 @@ text-align:center;
 
 .post-title-button{
   display: inline;
-  left: 74%;
-  position: absolute;
+  left: 80%;
+  position: relative;
 }
