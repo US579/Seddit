@@ -34,6 +34,9 @@ function initApp(apiUrl) {
 const login = document.getElementById("login_submit");
 login.addEventListener("click",(event)=>{
   myModule.loginToBack()
+  window.localStorage.setItem("location","feed")
+  myModule.infinteScroll();
+  // document.getElementById("my_profile").click();
   }
 )
 
@@ -58,17 +61,14 @@ const get_feed= document.getElementById("Home");
   myModule.infinteScroll();
 })
 
-async function showFeed(){
-  await myModule.getUserFeed(myModule.checkLocalStore("token"));
-  // implemete scrool
-  document.addEventListener("scroll",()=>{
-    const feedLast = document.getElementById("feed").lastChild;
-})
-  
+// async function showFeed(){
+//   await myModule.getUserFeed(myModule.checkLocalStore("token"));
+//   // implemete scrool
+//   document.addEventListener("scroll",()=>{
+//     const feedLast = document.getElementById("feed").lastChild;
+// })
 
-
-
-}
+// }
 
 // // post new contents
 
@@ -79,6 +79,9 @@ async function addListener() {
     // let post_button = document.getElementById("post-Bnt")
     // console.log(post_button);
     myModule.newPost();
+
+    //display setting to change profile
+    document.getElementById("setting").style.display = "inline";
     
     //--------------for modal of post button-----------------
     let modal = document.getElementById("Post-to-db");
@@ -86,13 +89,29 @@ async function addListener() {
     btn.onclick = function () {
       modal.style.display = "block";
     }
+   
+    //---------------------------------------------------
+
+ //--------------for modal of chang profile button-----------------
+    let modal2 = document.getElementById("profile-change-div");
+    let btn2 = document.getElementById("setting");
+    btn2.onclick = function () {
+      modal2.style.display = "block";
+    }
     window.onclick = function (event) {
       if (event.target == modal) {
         modal.style.display = "none";
+      } else if (event.target == modal2) {
+        modal2.style.display = "none";
       }
     }
-    //--------------for modal of post button-----------------
-  }
+    let profile_change_Bnt = document.getElementById("profile-change-Bnt");
+    profile_change_Bnt.addEventListener("click",(event)=>{
+    myModule.updateProfile();
+    document.getElementById("my_profile").click();
+  })
+   //-----------------------------------------------------
+}
 
 
 // test for thumbs up
@@ -128,7 +147,13 @@ async function addListener() {
   // --------------- generate feed -------------------------
   // not login feed show start feed 
   function anonyFeed(){
-  fetch("../data/feed.json")
+    let url = "http://127.0.0.1:5000/post/public"
+    fetch(url, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+      },
+    })
     .then(res => res.json())
     .then(res => {
       const res2 = myModule.sortArray(res);
@@ -138,6 +163,19 @@ async function addListener() {
         }
       })
     }
+
+
+  // function anonyFeed() {
+  //   fetch("../data/feed.json")
+  //     .then(res => res.json())
+  //     .then(res => {
+  //       const res2 = myModule.sortArray(res);
+  //       let feed = document.getElementById("feed");
+  //       for (let key in res2) {
+  //         feed.appendChild(myModule.createPageFeed(res.posts[res2[key]], 0));
+  //       }
+  //     })
+  // }
   // -------------------------------------------------
 
 

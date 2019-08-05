@@ -47,7 +47,6 @@ export function addCloseListener(func,id1,id2){
             }else{
                 dc.style.display = "none";
                 document.getElementById("signup-01").style.display = "block";
-
             }
         };
     }
@@ -164,14 +163,14 @@ export function signupToBack() {
     }
 }
 
-//--------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 
 
 
 //------------------------------------- display user feed when login  (cotains profiles)-------------------------------------
-export async function getUserFeed(token) {
+export async function getUserFeed(token,option = 2) {
     var profile_url = "http://127.0.0.1:5000/user/"
     await fetch(profile_url, {
         method: 'GET',
@@ -185,12 +184,13 @@ export async function getUserFeed(token) {
         .then(function (res) {
             // console.log(res.id);
             let profile = profileGenerator(res,1);
-            feed.innerHTML = "";
-            feed.appendChild(profile);
+            if(option === 2){
+                feed.innerHTML = "";
+                feed.appendChild(profile);
+            }
             fetchUserFeed();
         })
     }
-
 
 
 function fetchUserFeed() {
@@ -225,24 +225,30 @@ function fetchUserFeed() {
 export function infinteScroll() {
     document.addEventListener("scroll", () => {
         // alert("scroll")
-        console.log("scroll")
-        const lastNode = document.getElementById("feed").lastChild;
+        // console.log("scroll")
+        // const lastNode = document.getElementById("feed").lastChild;
         if (checkLocalStore("location") === 'feed') {
-            
-            let feedEnd = lastNode.offsetTop + lastNode.clientHeight;
-            
-            let pagPos = window.pageXOffset + window.innerHeight;
-            console.log(pagPos)
-            console.log(feedEnd-20)
-            
-            getUserFeed(checkLocalStore("token"))
-        
+            // console.log(lastNode.offsetTop)
+            // console.log(lastNode.clientHeight)
+
+            // let feedEnd = lastNode.offsetTop + lastNode.clientHeight;
+            // let pagPos = window.pageXOffset + window.innerHeight;
+            if (threshold() ){
+                  getUserFeed(checkLocalStore("token"),1);
+            }
         }
     }, false)
 }
 
+function threshold() {
+    let fullHeight = Math.max(document.body.scrollHeight, document.body.offsetHeight);
+    let viewportHeight = Math.max(window.innerHeight , document.documentElement.clientHeight ,document.body.clientHeight);
+    let scrollHeight = Math.max(window.pageYOffset ,document.documentElement.scrollTop, document.body.scrollTop);
+    return fullHeight - viewportHeight - scrollHeight < 20;  
+}
 
-// -------------------------------------------- Post templete  ---------------------------------
+
+// ----------------------------------------------------------------------------- Post templete  ------------------------------------------------------------------
 export function createPageFeed(post,option=1) {
     // time 
     let postTime = time2time(post.meta.published);
@@ -254,9 +260,9 @@ export function createPageFeed(post,option=1) {
     post_front_title.appendChild(subreddit);
     let postby = createElement('span', "Posted by @ ", { style: "color: rgb(120, 124, 126);", class: "post-by", id: 'post-by' + post.id });
     post_front_title.appendChild(postby);
-    let auther = createElement('span', post.meta.author, { class: 'post-auther', style: "color: rgb(120, 124, 126);", style: 'cursor:pointer', id: 'post-author-id' + post.id });
+    let auther = createElement('span', post.meta.author, { "data-id-author": "" ,class: 'post-auther', style: "color: rgb(120, 124, 126);", style: 'cursor:pointer', id: 'post-author-id' + post.id });
     //转到auther的post
-    // author.addEventListener('click', () => userpost(post.meta.author));
+    // author.addEventListener('click', () => userpost(post.meta.author))
 
     post_front_title.appendChild(auther);
     let time = createElement('h6', postTime, { class: 'post-time', style: "color: rgb(120, 124, 126);" });
@@ -269,7 +275,7 @@ export function createPageFeed(post,option=1) {
     unfollow_button.addEventListener("click", () => tounFollow(post.meta.author));
     section.appendChild(post_front_title);
 
-    section.appendChild(createElement("h5", post.title, { class: "post-title", id: "post-title-id" + post.id }));
+    section.appendChild(createElement("h5", post.title, { "data-id-title": "" ,class: "post-title", id: "post-title-id" + post.id }));
     section.appendChild(createElement("h5", post.text, { class: "post-content", id: "post-content-id" + post.id }));
     if (post.image != null) {
         section.appendChild(createElement('img', null, { src: 'data:image/png;base64,' + post.image, class: 'post-image', id: 'post-image' + post.id, float: "" }));
@@ -284,11 +290,20 @@ export function createPageFeed(post,option=1) {
     // console.log(post.id)
     likeicon.addEventListener('click', () => thumbsup(post.id));
     section.appendChild(likeicon);
+
+    section.appendChild(createElement('h6', post.meta.upvotes.length, { "data-id-upvotes": "", class: "post_count_num", id: "likes-num" + post.id }));
+
+
+    const dislikeicon = createElement('img', null,
+        { src: '/src/icon/down.png', alt: "dislike", class: 'post-button', style: "cursor:pointer" });
+    dislikeicon.addEventListener('click', () => thumbsdown(post.id));
+    section.appendChild(dislikeicon);
+
    
     //comment button
     let comment_button = createElement('img', null, { src: '/src/icon/comment.png', alt: 'Comments', class: 'post-button', style: "cursor:pointer" })
-   
     section.appendChild(comment_button);
+
 
     // add event listener to the comment_button
     comment_button.addEventListener('click', () => {
@@ -298,6 +313,7 @@ export function createPageFeed(post,option=1) {
             document.getElementById("post-comments-div-" + post.id).style.display = "block";
         }
     });
+    section.appendChild(createElement('h6', post.comments.length, { class: "post_count_num", id: "comment-num" + post.id }));
 
     //delete button
     let delete_post_button = createElement('img', null, { src: '/src/icon/delete.png', id:"delete-post",alt: 'delete', class: 'post-button', style: "cursor:pointer" })
@@ -320,12 +336,13 @@ export function createPageFeed(post,option=1) {
         });
     }
 
+
     // upvote_button.addCloseListener("click", () => upvote_list(post.meta.upvotes));
 
     section.appendChild(createElement('h6', null, { class: "post-padding" }));
-    section.appendChild(createElement('h6', post.meta.upvotes.length, { "data-id-upvotes": "", class: "post_count_num", id: "likes-num" + post.id }));
-    section.appendChild(createElement('h6', post.comments.length, { class: "post_count_num", id: "comment-num" + post.id }));
-    section.appendChild(createElement('h6', null, { class: "post-padding" }));
+    // section.appendChild(createElement('h6', post.meta.upvotes.length, { "data-id-upvotes": "", class: "post_count_num", id: "likes-num" + post.id }));
+    // section.appendChild(createElement('h6', post.comments.length, { class: "post_count_num", id: "comment-num" + post.id }));
+    // section.appendChild(createElement('h6', null, { class: "post-padding" }));
     section.appendChild(createElement("input", null, { class: "comment_add_input", placeholder: "Enter your comment here", id: "comment-add-input-" + post.id }))
     
     let comment_add_button = createElement("button", "add", { class: "comment_add_button", style: "cursor:pointer", id: "comment-add-button-" + post.id })
@@ -349,9 +366,54 @@ export function createPageFeed(post,option=1) {
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
+
+
+//---------------------------------------------------------------------------------- update profile function----------------------------------------------------------------------------------
+export function updateProfile(){
+    let email = document.getElementById("profile-email").value
+    let name = document.getElementById("profile-name").value
+    let password = document.getElementById("profile-password").value
+    if ( !email && !name && !password) {
+        alert("At least on filed must be non empty ")
+        return false;
+    }
+    
+    const content = {
+        "email": email,
+        "name": name,
+        "password": password,
+    }
+    profileChangeRequest(content);
+    
+    
+}
+
+function profileChangeRequest(content){
+    let post_url = "http://127.0.0.1:5000/user/";
+    fetch(post_url, {
+        method: "PUT",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': 'Token ' + checkLocalStore("token")
+        },
+        body: JSON.stringify(content),
+    })
+        .then(res => res.json())
+        .then(function (res) {
+            if (res.msg === "success" ) {
+                alert("you have update profile successfully")
+            }
+        })
+
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
 //follow function
 function toFollow(username){
-    let follow_url = "http://127.0.0.1:5000/user/follow?username="+username;
+    let follow_url = "http://127.0.0.1:5000/user/follow?username=" + username;
     fetch(follow_url, {
         method: 'PUT',
         headers: {
@@ -431,6 +493,34 @@ function thumbsup(id){
     })
     
 }
+// thumbsdown function
+function thumbsdown(id) {
+    alert(id);
+    let thumbsup_url = "http://127.0.0.1:5000/post/vote?id=" + id;
+    fetch(thumbsup_url, {
+        method: 'DELETE',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': 'Token ' + checkLocalStore("token")
+        },
+    })
+        .then(res => res.json())
+        .then(function (res) {
+            // console.log(res)
+            if (res.message === "success") {
+                let addlike = document.getElementById("likes-num" + id);
+                addlike.innerText = parseInt(document.getElementById("likes-num" + id).innerText) - 1;
+            } else {
+                if (res.message === "Internal Server Error") {
+                    alert('can not dislike yourself')
+                    return;
+                }
+                alert("you have to login first")
+            }
+        })
+}
+
 
 
 //---------------------------------post function-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -440,6 +530,7 @@ export function newPost(){
     // alert("hahahah")
     // before read image clean the img store in the localstorge
     window.localStorage.setItem('postimg',0);
+
     // listen on the file uploader and store the image in the localstorge
     fileLoaderlistener();
     // console.log(checkLocalStore("postimg"))
@@ -672,7 +763,7 @@ export async function getUserPost(token) {
             feed.innerHTML = "";
             feed.appendChild(profile)
             feed.appendChild(postGenerator());
-
+            feed.appendChild(updateProfileGenerator());
             // if (res.following.length === 0) {
             //     feed.appendChild(createElement("div", "Wow,such empty", { class: "empty-feed" }))
             // }
@@ -711,7 +802,6 @@ function fetchUserPost(id) {
 }
 
 
-
 function postGenerator(){
     let postDIv = createElement("div",null,{id:"Post-to-db",class:"post-to-db"})
     // postDIv.appendChild(createElement("span", , { type: "file", class: "inputfile", id: "file_upload", placeholder: "Enter your description here" }));
@@ -724,6 +814,18 @@ function postGenerator(){
     return postDIv;
 }
 
+
+function updateProfileGenerator() {
+    let postDIv = createElement("div", null, { id: "profile-change-div", class: "post-to-db" })
+    // postDIv.appendChild(createElement("span", , { type: "file", class: "inputfile", id: "file_upload", placeholder: "Enter your description here" }));
+    postDIv.appendChild(createElement("input", null, { id: "profile-email", class: "post-input", placeholder: "Enter your email here", }));
+    postDIv.appendChild(createElement("input", null, { id: "profile-name", class: "post-input", placeholder: "Enter your name here", }));
+    postDIv.appendChild(createElement("input", null, { id: "profile-password", class: "post-input", placeholder: "Enter your password here", }));
+    postDIv.appendChild(createElement("button", "Change", { class: "post-Bnt", id: "profile-change-Bnt", style: "cursor:pointer" }));
+     // test for post button
+    return postDIv;
+}
+
 // user feed : 1
 // user post : 2
 function profileGenerator(res,option) {
@@ -731,12 +833,20 @@ function profileGenerator(res,option) {
     if (option===2){
     profile.appendChild(createElement("button", "Post", { class: "post-Bnt-1", id: "post-Bnt-1", style: "cursor:pointer" }));
     }
-    profile.appendChild(createElement("div", res.name, { class: "profile-name" }))
+    let img_name_div = createElement("div", null, { class: "img-name-div", id:"img-name-div-"+res.id,style:"display:inline"})
+    img_name_div.appendChild(createElement('img', null, { src: '/src/icon/default.png', id: "default-img", alt: 'default', class: 'default-img', style: "cursor:pointer" }))
+    img_name_div.appendChild(createElement("div", res.name, { class: "profile-name", style: "display:inline"}))
+    profile.appendChild(img_name_div)
     // console.log(res.following)
-    profile.appendChild(createElement("b", "Following: " + res.following.length, { class: "profile-following" }))
-    profile.appendChild(createElement("b", "Upvotes: " + res.followed_num, { class: "profile-upvotes" }))
-    profile.appendChild(createElement("b", "Followed: " + res.followed_num, { class: "profile-followed" }))
-    profile.appendChild(createElement("b", "Posts: " + res.posts.length, { class: "profile-posts" }))
+    let profile_sub_div = createElement("div", null, { class: "profile-sub-div", id: "profile-sub-div" + res.id })
+    profile_sub_div.appendChild(createElement("b", "Following: " + res.following.length, { class: "profile-following" }))
+
+    upvoteCaculator(res.id)
+
+    profile_sub_div .appendChild(createElement("b", "Upvotes: " + likenum, { class: "profile-upvotes" }))
+    profile_sub_div .appendChild(createElement("b", "Followed: " + res.followed_num, { class: "profile-followed" }))
+    profile_sub_div .appendChild(createElement("b", "Posts: " + res.posts.length, { class: "profile-posts" }))
+    profile.appendChild(profile_sub_div);
     return profile;
 }
 
@@ -764,7 +874,6 @@ export function sortArray(res) {
 
 export function checkLocalStore(key) {
     if (window.localStorage) {
-        // console.log(window.localStorage.getItem(key));
         return window.localStorage.getItem(key);
     } else {
         return null
@@ -788,4 +897,53 @@ export function createElement(tag, data, options = {}) {
         }, ele);
 }
 
+
+
+// ----------------------------------------total upvotes-----------------------------------------------------------
+
+// global var  only to caculate the total upvotes
+var likenum = 0;
+var nummm = 0;
+
+
+export async function upvoteCaculator(id){
+    var profile_url = "http://127.0.0.1:5000/user/"
+
+    fetch(profile_url, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': 'Token ' + checkLocalStore("token")
+        },
+    })
+        .then(res => res.json())
+        .then(function (res) {
+            // console.log(res.posts[0]);
+            
+            for (let i = 0 ; i< res.posts.length;i++){
+                console.log(res.posts[i])
+                getUpvoteNum(res.posts[i])
+                likenum += nummm;
+            }
+        })
+
+}
+
+async function getUpvoteNum(id){
+    let thumbsup_url = "http://127.0.0.1:5000/post/?id=" + id;
+    await fetch(thumbsup_url, {
+        method: 'GET',
+        headers: {
+            "accept": "application/json",
+            "Authorization": "Token " + checkLocalStore("token")
+        }
+    })
+        .then(res => res.json())
+        .then(function (res) {
+            console.log(res.meta.upvotes.length)
+            nummm = res.meta.upvotes.length
+        })
+
+}
 // ---------------------------------------------------------------------------------------------------

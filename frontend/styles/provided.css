@@ -242,8 +242,15 @@ button:hover {
  display: block;
   /* width: 650px;
   height: 650px; */
-   width: 100%; 
-    height: auto;
+  width: 100%; 
+  height: auto;
+}
+
+.default-img{
+    width: 150px;
+  height: 150px;
+
+
 }
 
 
@@ -319,8 +326,8 @@ button:hover {
 
 .post_count_num {
     display: inline;
-    padding: 8px 38px;
-    margin: 0 auto;
+    /* padding: 8px 69px; */
+    margin-top: 0;
     font-size: 20px;
     font-family: Helvetica;
     color: goldenrod;
@@ -353,11 +360,12 @@ button:hover {
   background-repeat:repeat-x;
 }
 
-
 .profile-name{
    font-family: Chalkduster;
    padding-bottom : 35px;
    font-size: 65px;
+   margin-left: 10%;
+   margin-bottom: 5%;
 
 }
 

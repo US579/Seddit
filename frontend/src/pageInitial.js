@@ -59,11 +59,12 @@ function buttonInit(){
     let login_button = createElement("button", "Log In", { "data-id-login": "", style: "cursor:pointer", id: "login_button", class: "button button-primary", display:"inline" });
     let signup_button = createElement("button", "Sign Up", { "data-id-signup": "", style: "cursor:pointer", id: "signup_button", class: "button button-primary", display:"inline" });
 
+    let settings = createElement("button", "Setting", { "data-id-settings": "", style: "cursor:pointer;display:none", id: "setting", class: "button button-primary", });
     let my_profile = createElement("button", "My profile", { "data-id-myprofile": "", style: "cursor:pointer;display:none", id: "my_profile", class: "button button-primary", });
     let Home = createElement("button", "Home", { "data-id-home": "", style: "cursor:pointer;display:none", id: "Home", class: "button button-primary", display: "inline" });
     let logout_button = createElement("button", "Log out", { "data-id-logout": "", style: "cursor:pointer;display:none", id: "logout_button", class: "logout-button-class" });
     // loop for generate <header>
-    var but_and_input = [search_input, login_button, signup_button, my_profile, Home, logout_button]
+    var but_and_input = [search_input, login_button, signup_button, settings, my_profile, Home, logout_button]
     for (let i = 0; i < but_and_input.length; ++i) {
         let newLi = document.createElement("li");
         newLi.className = 'nav-item';
