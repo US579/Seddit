@@ -1,0 +1,101 @@
+408a2a2,us579,11 seconds ago,add frontend.tar
+0ed4554,us579,43 seconds ago,add anony Feed
+9649e8e,us579,2 hours ago,test version
+215bd5c,us579,2 hours ago,modify css edit button
+f0bb8f9,us579,2 hours ago,modify css edit button
+0049c64,us579,2 hours ago,add frontend.tar
+e358395,us579,2 hours ago,clean change css work version2
+510454f,us579,2 hours ago,clean css code
+c6208a9,us579,2 hours ago,add tar file
+d5287ad,us579,2 hours ago,add tar file
+1e5d7b3,us579,2 hours ago,work version1 with clean code
+192b8bb,us579,2 hours ago,work version1 with clean code
+2ec38ab,us579,2 hours ago,work version1 with clean code
+5f01b0d,us579,2 hours ago,work version1
+fc8f6ab,us579,3 hours ago,work version
+b5b43e0,us579,4 hours ago,work version
+cf75651,us579,10 hours ago,clean code this version can work
+adb0aca,us579,11 hours ago,subset2 fix bug change post
+8af7f95,us579,14 hours ago,subset2 finish change post
+ab02a4b,us579,15 hours ago,add post change with liveupdate
+2f129fc,us579,17 hours ago,add update post button without error
+debf681,us579,19 hours ago,fix thumbs up bugs
+34a0d85,us579,23 hours ago,add upvotecount
+8493bd0,us579,24 hours ago,finish subset3
+26696f3,us579,24 hours ago,finish subset2
+9bcada1,us579,2 days ago,add infinite scroll finish
+f5ffde5,Zain Afzal,2 days ago,fixed shared db connection accross multiple threads
+07903ea,us579,2 days ago,add infinite scroll
+66f72be,Zain Afzal,2 days ago,fixed incorrect behaviour in spec for POST /post
+4428b0f,Zain Afzal,2 days ago,fixed dummy/post
+f82415f,us579,2 days ago,clean code
+6435dbd,Zain Afzal,2 days ago,killed profile pictures
+279decf,us579,2 days ago,fix small bugs
+f39815b,Zain Afzal,2 days ago,Merge pull request #10 from COMP2041UNSW/add-favicon.ico
+da3034b,Andrew Taylor,2 days ago,add favicon.ico
+0a1374e,us579,2 days ago,fix infnite loop in getUserpost
+3ed6d9e,us579,2 days ago,fix delete post method post change to delete
+de07628,Zain Afzal,2 days ago,Merge pull request #9 from COMP2041UNSW/frontend-innerhtml-test-fix
+7ff97dc,Alex Hinds,2 days ago,Fix: innerHTML call is being called by Mocha, adjust tests
+f8d3a55,Adam,2 days ago,Merge pull request #8 from COMP2041UNSW/db_fix
+fe88173,us579,2 days ago,finish frontend post button upload file
+9bad3a0,us579,3 days ago,add post delelte not finish error code 400
+dd4dbf2,Zain Afzal,3 days ago,cleaned up test db enteries
+adeeecb,us579,3 days ago,add post in home and profile
+6a76194,Zain Afzal,3 days ago,fixed spec typo + user_id 0 in db
+67bf8a2,Zain Afzal,3 days ago,Merge branch 'master' of github.com:COMP2041UNSW/seddit
+8be4599,Zain Afzal,3 days ago,updated docs
+1f4c6e0,us579,3 days ago,add upvote modal window
+dc1c15d,us579,3 days ago,add upvote name
+cadf5d3,us579,3 days ago,clean code
+f29110a,us579,3 days ago,finish subset1
+6c7415b,us579,3 days ago,add show posts
+c042be1,us579,3 days ago,finish login function and show profile with news feed
+5f8c1a8,us579,3 days ago,finish login function and show profile with news feed
+f075b97,us579,3 days ago,fix bug
+2515b8c,us579,3 days ago,add profile
+33f6cb6,us579,3 days ago,fix button function
+1b09e15,us579,3 days ago,fix button function
+6037d80,us579,4 days ago,add getpost not finish
+3da2cf0,us579,4 days ago,login more logicial
+6659d61,us579,4 days ago,fix login signup
+96be733,us579,5 days ago,finish subset0
+02f8660,us579,5 days ago,finish thumbs up
+5ee62ab,us579,5 days ago,finish login signup connection
+0475a40,us579,5 days ago,add signup
+dfd1738,us579,5 days ago,add feed
+eb68aa1,us579,5 days ago,add backend
+f4c7b86,Zain Afzal,6 days ago,Update user.py
+590df16,Zain Afzal,6 days ago,added docs
+070344a,Zain Afzal,6 days ago,Merge pull request #7 from COMP2041UNSW/fixed_published_int_cast
+d8cb40f,Zain Afzal,6 days ago,fixed casting issue, also added username to GET /user
+053fb70,Alex Hinds,6 days ago,Fix for post/public route
+65bc404,Zain Afzal,6 days ago,Merge pull request #5 from COMP2041UNSW/search_functionality_spec_clarification
+11c8733,Adam Tizzone,6 days ago,Made the intended search functionality more clear in the assignment spec
+03028a0,us579,6 days ago,fetch image success
+9e50eff,us579,6 days ago,add fetch
+de3816a,us579,6 days ago,finish addeventlistener add comment
+5e74705,us579,6 days ago,finish addeventlistener clean code
+bd7c816,us579,6 days ago,finish addeventlistener
+3785618,us579,6 days ago,modify signup
+9562564,us579,6 days ago,clean code
+3604dba,us579,6 days ago,add signup form
+3bb73e6,us579,6 days ago,add login form
+b0fe71a,Zain Afzal,7 days ago,Merge pull request #4 from COMP2041UNSW/fix_overwriting_title_with_image_during_post_edit
+432800b,Adam T,7 days ago,Allow dummy user to edit the title of posts made by the dummy user
+20907fb,Adam T,7 days ago,Fixed bug causing title to be overwritten with the image when updating a post
+b82b06e,Zain Afzal,7 days ago,fixed wrong methods
+29ecdf5,Zain Afzal,7 days ago,fixed /latest endpoint and #profile=<name>
+d7f2e3c,us579,7 days ago,add click listener
+e1e86e4,us579,8 days ago,finish sub post
+16e126e,us579,8 days ago,add post button
+1e86cd5,us579,8 days ago,finish initial
+0ab010d,us579,8 days ago,add initial
+f30f216,Sam-OB,8 days ago,Added some "logged in"s before user
+65b0f88,Alex Hinds,9 days ago,Merge pull request #3 from COMP2041UNSW/post_vote_db_reference_fix
+acb0e4b,Adam Tizzone,9 days ago,Added missing post tests, fixed incorrect db column referencing issue
+50a8c3a,Andrew Taylor,10 days ago,add crossorigin="use-credentials" to loading of index.js in frontend/index.html
+83c92ef,Andrew Taylor,10 days ago,Fix typo in documentation
+af5ebde,Andrew Taylor,11 days ago,correct virtualenv command in backend/README.md
+b79702b,Andrew Taylor,11 days ago,correct reference to run.py to backend_server.py and references to server.py to frontend_server.py
+a9ba5d6,Andrew Taylor,11 days ago,initial commit

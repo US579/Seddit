@@ -1,19 +1,9 @@
-export function is_number(e) {
-    var char_code = e.charCode ? e.charCode : e.keyCode;
-    if ((char_code >= 48 && char_code <= 57) || (char_code == 46)) {
-        return true;
-    }
-    else {
-        return false;
-    }
-}
 
 // 1 for close 
 // 2 for login
 // 3 for signup
 export function addCloseListener(func, id1, id2) {
     if (func === 1) {
-        // console.log(id1, " ", id2);
         var close1 = document.getElementById(id1);
         close1.onclick = () => {
             document.getElementById(id2).style.display = "none";
@@ -87,15 +77,12 @@ export function loginToBack() {
         .then(res => res.json())
         .then(function (res) {
             if (res["token"]) {
-                console.log(res["token"])
                 window.alert('You are successfully logged in');
                 window.localStorage.setItem('username', username);
                 window.localStorage.setItem('id', res.id);
                 window.localStorage.setItem('token', res['token']);
                 hidebutton();
-                // location.reload()
             }
-            console.log(res.message)
             if (res.message === "Invalid Username/Password") {
                 alert("user and password is not correct")
                 return false;
@@ -113,11 +100,13 @@ function hidebutton() {
     document.getElementById("login_button").style.display = "none";
     document.getElementById("signup_button").style.display = "none"
     document.getElementById("search").style.display = "inline";
+    document.getElementById("newFeed").style.display = "inline";
     document.getElementById("Home").style.display = "inline";
     document.getElementById("my_profile").style.display = "inline";
     document.getElementById("logout_button").style.display = "inline";
     document.getElementById("feed").style = "block";
 }
+
 
 
 export function signupToBack() {
@@ -149,7 +138,6 @@ export function signupToBack() {
             .then(res => res.json())
             .then(function (res) {
                 if (res["token"]) {
-                    // console.log(res["token"])
                     window.alert('You are successfully signup');
                     window.localStorage.setItem('username', username);
                     window.localStorage.setItem('token', res['token']);
@@ -167,8 +155,6 @@ export function signupToBack() {
 
 
 
-
-
 //------------------------------------- display user feed when login  (cotains profiles)-------------------------------------
 export async function getUserFeed(token, option = 2) {
     var profile_url = "http://127.0.0.1:5000/user/"
@@ -182,7 +168,6 @@ export async function getUserFeed(token, option = 2) {
     })
         .then(res => res.json())
         .then(function (res) {
-            // console.log(res.id);
             let profile = profileGenerator(res, 1);
             if (option === 2) {
                 feed.innerHTML = "";
@@ -191,7 +176,6 @@ export async function getUserFeed(token, option = 2) {
             fetchUserFeed();
         })
 }
-
 
 function fetchUserFeed() {
     const feed_url = "http://127.0.0.1:5000/user/feed";
@@ -205,28 +189,21 @@ function fetchUserFeed() {
     })
         .then(res => res.json())
         .then(function (res) {
-            // console.log(res);
-            // if (res.posts.length === 0) {
-            //     feed.appendChild(createElement("div", "Wow,such empty", { class: "empty-feed",id:"empty-feed" }))
-            // }
             for (let i = res.posts.length - 1; i > -1; i--) {
-                // console.log(i)
-                // console.log(res.posts.length)
                 let content = createPageFeed(res.posts[i]);
                 feed.appendChild(content);
             }
+            // anonyFeed();
+            
         })
 }
-//--------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-//------------------------infinte feed
+//---------------------------------------------------------------------- infinte scroll ---------------------------------------------
 
 export function infinteScroll() {
     document.addEventListener("scroll", () => {
-        // alert("scroll")
-        // console.log("scroll")
-        // const lastNode = document.getElementById("feed").lastChild;
         if (checkLocalStore("location") === 'feed') {
             if (threshold()) {
                 getUserFeed(checkLocalStore("token"), 1);
@@ -247,7 +224,6 @@ function threshold() {
 export function createPageFeed(post, option = 1) {
     // time 
     let postTime = time2time(post.meta.published);
-    // let upvote = createElement("span", post.meta.upvotes.length, { "data-id-upvotes": "", className: "post-upvote" });
     let section = createElement('section', null, { "data-id-post": "", class: 'page-feed', id: post.id, style: "display:block;" });
     let post_front_title = createElement("div", null, { class: 'post-front-title' });
 
@@ -256,8 +232,6 @@ export function createPageFeed(post, option = 1) {
     let postby = createElement('span', "Posted by @ ", { style: "color: rgb(120, 124, 126);", class: "post-by", id: 'post-by' + post.id });
     post_front_title.appendChild(postby);
     let auther = createElement('span', post.meta.author, { "data-id-author": "", class: 'post-auther', style: "color: rgb(120, 124, 126);", style: 'cursor:pointer', id: 'post-author-id' + post.id });
-    //转到auther的post
-    // author.addEventListener('click', () => userpost(post.meta.author))
 
     post_front_title.appendChild(auther);
     let time = createElement('h6', postTime, { class: 'post-time', style: "color: rgb(120, 124, 126);" });
@@ -285,31 +259,23 @@ export function createPageFeed(post, option = 1) {
     if (post.image != null) {
         section.appendChild(createElement('img', null, { src: 'data:image/png;base64,' + post.image, class: 'post-image', id: 'post-image' + post.id, float: "" }));
     }
-    // if (post.thumbnail != null) {
-    //     section.appendChild(createElement('img', null, { src: 'data:image/png;base64,' + post.thumbnail, class: 'post-image', id: 'post-image' + post.id, float: "" }));
-    // }
     const likeicon = createElement('img', null,
         { src: '/src/icon/up.png', alt: 'Likes', class: 'post-button', style: "cursor:pointer" });
 
-    //增加like计数
-    // console.log(post.id)
+    //increase like count 
     likeicon.addEventListener('click', () => thumbsup(post.id));
     section.appendChild(likeicon);
 
     section.appendChild(createElement('h6', post.meta.upvotes.length, { "data-id-upvotes": "", class: "post_count_num", id: "likes-num" + post.id }));
-
 
     const dislikeicon = createElement('img', null,
         { src: '/src/icon/down.png', alt: "dislike", class: 'post-button', style: "cursor:pointer" });
     dislikeicon.addEventListener('click', () => al(post.id))
 
     section.appendChild(dislikeicon);
-
-
     //comment button
     let comment_button = createElement('img', null, { src: '/src/icon/comment.png', alt: 'Comments', class: 'post-button', style: "cursor:pointer" })
     section.appendChild(comment_button);
-
 
     // add event listener to the comment_button
     comment_button.addEventListener('click', () => {
@@ -342,12 +308,7 @@ export function createPageFeed(post, option = 1) {
         });
     }
 
-    // upvote_button.addCloseListener("click", () => upvote_list(post.meta.upvotes));
-
     section.appendChild(createElement('h6', null, { class: "post-padding" }));
-    // section.appendChild(createElement('h6', post.meta.upvotes.length, { "data-id-upvotes": "", class: "post_count_num", id: "likes-num" + post.id }));
-    // section.appendChild(createElement('h6', post.comments.length, { class: "post_count_num", id: "comment-num" + post.id }));
-    // section.appendChild(createElement('h6', null, { class: "post-padding" }));
     section.appendChild(createElement("input", null, { class: "comment_add_input", placeholder: "Enter your comment here", id: "comment-add-input-" + post.id }))
 
     let comment_add_button = createElement("button", "add", { class: "comment_add_button", style: "cursor:pointer", id: "comment-add-button-" + post.id })
@@ -371,7 +332,6 @@ export function createPageFeed(post, option = 1) {
 
 async function addListeningToeditBbutton(id) {
     let modal = document.getElementById("post-change-div");
-    // console.log(id)
     modal.style.display = "block";
     window.onclick = function (event) {
         if (event.target == modal) {
@@ -380,22 +340,7 @@ async function addListeningToeditBbutton(id) {
             modal2.style.display = "none";
         }
     }
-    // let post_change_Bnt = document.getElementById("post-change-Bnt");
-    // post_change_Bnt.addEventListener("click", (event) => {
-    //     //  updatePost(id);
-    //     // // console.log(checkLocalStore("postimg_update"))
-    //     // postChangeRequest(id, checkLocalStore("postimg_update"))
-    //     updatePost(id);
-    //     // document.getElementById("my_profile").click();
-    // })
 }
-
-// async function asyFun(id){
-//     console.log(id)
-//     await
-//     // postChangeRequest(id, checkLocalStore("postimg_update"))
-
-// }
 
 
 function updatePost(id) {
@@ -412,14 +357,12 @@ function updatePost(id) {
     reader.onload = function () {
         var c_content = "";
         c_content = this.result.replace(/^data:image\/.*,/, '');
-        console.log(c_content);
         var c_title = document.getElementById("post-change-title").value;
         var c_text = document.getElementById("post-change-text").value;
         var c_subseddit = document.getElementById("post-change-subseddit").value;
         if (!c_title) { c_title = document.getElementById("post-title-id" + id).innerText };
         if (!c_text) { c_text = document.getElementById("post-content-id" + id).innerText };
         if (!c_subseddit) { c_subseddit = document.getElementById("post-subseddit-id" + id).innerText };
-        // if (!c_image) { c_image = document.getElementById("post-image" + id).src.replace(/^data:image\/.*,/, ''); };
         const payload = {
             "title": c_title,
             "text": c_text,
@@ -427,7 +370,6 @@ function updatePost(id) {
             "image": c_content
         }
         let post_change_url = "http://127.0.0.1:5000/post/?id=" + id;
-        console.log(payload)
         fetch(post_change_url, {
             method: "PUT",
             headers: {
@@ -506,6 +448,7 @@ function profileChangeRequest(content) {
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
+
 //follow function
 function toFollow(username) {
     let follow_url = "http://127.0.0.1:5000/user/follow?username=" + username;
@@ -525,7 +468,7 @@ function toFollow(username) {
                     return false;
                 }
                 alert("follow successfully!");
-                document.getElementById("my_profile").click();
+                document.getElementById("Home").click();
             } else {
                 alert("you have to login first");
             }
@@ -551,7 +494,7 @@ function tounFollow(username) {
                     return false;
                 }
                 alert("unfollow successfully!");
-                document.getElementById("my_profile").click();
+                document.getElementById("Home").click();
             } else {
                 alert("you have to login first");
             }
@@ -603,7 +546,6 @@ function thumbsdown(id) {
     })
         .then(res => res.json())
         .then(function (res) {
-            // console.log(res)
             if (res.message === "success") {
                 let addlike = document.getElementById("likes-num" + id);
                 addlike.innerText = parseInt(document.getElementById("likes-num" + id).innerText) - 1;
@@ -628,7 +570,6 @@ export function newPost() {
 
     // listen on the file uploader and store the image in the localstorge
     fileLoaderlistener();
-    // console.log(checkLocalStore("postimg"))
     let post_Bnt = document.getElementById("post-Bnt");
     post_Bnt.onclick = function () {
 
@@ -658,6 +599,8 @@ export function newPost() {
         }
     }
 }
+
+
 
 //sub function to request
 function post_request(content) {
@@ -694,7 +637,6 @@ function fileLoaderlistener() {
         const reader = new FileReader();
         reader.readAsDataURL(file);
         reader.onload = (e) => {
-            // alert("hhaha")
             let content = e.target.result.split(',')[1]
             window.localStorage.setItem('postimg', content);
         }
@@ -711,9 +653,6 @@ async function addcomment(id) {
     const comments = {
         "comment": comments_content.value,
     };
-    // console.log(comments)
-    // console.log(addcomment_url)
-    // console.log(checkLocalStore("token"))
     await fetch(addcomment_url, {
         method: 'PUT',
         headers: {
@@ -728,9 +667,7 @@ async function addcomment(id) {
         .then(function (res) {
             // insert from here 
             let comment_div = document.getElementById("post-comments-div-" + id);
-            // console.log(res)
             var myDate = new Date();
-            // console.log(myDate)
 
             if (checkLocalStore("token")) {
                 comment_div.insertBefore(createElement("h4", comments_content.value, { class: "post-comments-content", }), comment_div.firstChild);
@@ -740,7 +677,6 @@ async function addcomment(id) {
                 let comment_num = document.getElementById("comment-num" + id);
                 comment_num.innerText = parseInt(document.getElementById("comment-num" + id).innerText) + 1;
             } else {
-                // console.log(checkLocalStore("token"))
                 alert("you have to login first !")
             }
         })
@@ -766,8 +702,6 @@ function deletePost(id) {
     })
         .then(res => res.json())
         .then(function (res) {
-            // alert("delete")
-            // console.log(res)
             if (res.message === "success") {
                 document.getElementById("my_profile").click();
                 alert("Post has been deleted")
@@ -784,7 +718,6 @@ function deletePost(id) {
             }
         })
 
-
 }
 
 
@@ -796,7 +729,6 @@ export function upvote_list(list, id) {
     upvote_div.onclick = function () {
         upvote_div.style.display = "none";
     }
-    // console.log(list)
     for (let i = 0; i < list.length; ++i) {
         const upvote_url = "http://127.0.0.1:5000/user/?id=" + list[i];
         fetch(upvote_url, {
@@ -819,11 +751,7 @@ export function upvote_list(list, id) {
 // create comment elements and return 
 function commentGenerator(id, comment) {
     let div_comment = createElement("div", null, { class: "post-comments-div", style: "display:none;", id: "post-comments-div-" + id })
-    // div_comment.appendChild(createElement("input", null, { class: "comment_add_input", style: "display:inline;", placeholder: "Enter your comment here", id: "comment-add-input-" + id }))
-    // div_comment.appendChild(createElement("button", "add", { class: "comment_button_input", style: "cursor:pointer", id: "comment-add-button-" + id }))
-    // div_comment.appendChild(createElement('h6', null, { class: "post-padding" }));
     for (let i = 0; i < comment.length; ++i) {
-        // console.log(comment[i])
         div_comment.appendChild(createElement("span", "* Posted by @ ", { class: "post-comments-postby", style: "color: rgb(120, 124, 126);" }))
         div_comment.appendChild(createElement("span", comment[i].author, { class: "post-comments-author", }))
         div_comment.appendChild(createElement("span", "   " + time2time(comment[i].published), { class: "post-comments-time", style: "color: rgb(120, 124, 126);" }))
@@ -832,8 +760,6 @@ function commentGenerator(id, comment) {
     return div_comment;
 }
 
-
-//give some body thumbs up
 
 
 //------------------------------------- display user post when login -------------------------------------
@@ -856,24 +782,17 @@ export async function getUserPost(token) {
             feed.appendChild(profile)
             feed.appendChild(postGenerator());
             feed.appendChild(updateProfileGenerator());
-            // if (res.following.length === 0) {
-            //     feed.appendChild(createElement("div", "Wow,such empty", { class: "empty-feed" }))
-            // }
-            // let buttonTag3 = createElement("button", "Post", { class: "button button-secondary", id: "post-button", style: "cursor:pointer" })
-            // feed.appendChild(buttonTag3);
             if (res.posts.length > 0) {
-                // console.log(res.posts.length )
                 for (let i = res.posts.length - 1; i != -1; i--) {
-                    console.log(i)
-                    // console.log(res.following[i])
                     fetchUserPost(res.posts[i]);
                 }
             }
         })
         .then(function (res) {
             feed.appendChild(updatePostGenerator());
+            // anonyFeed();
         })
-}
+    }
 
 function fetchUserPost(id) {
     const feed_url = "http://127.0.0.1:5000/post/?id=" + id;
@@ -887,49 +806,39 @@ function fetchUserPost(id) {
     })
         .then(res => res.json())
         .then(function (res) {
-            // console.log(res);
             let content = createPageFeed(res, 3);
-            // console.log(content)
-            // console.log(res.meta)
-            // document.getElementById("feed").appendChild(postGenerator());
             document.getElementById("feed").appendChild(content);
         })
+
 }
 
 
 function postGenerator() {
     let postDIv = createElement("div", null, { id: "Post-to-db", class: "post-to-db" })
-    // postDIv.appendChild(createElement("span", , { type: "file", class: "inputfile", id: "file_upload", placeholder: "Enter your description here" }));
     postDIv.appendChild(createElement("input", null, { type: "file", class: "inputfile", id: "file_upload", placeholder: "Enter your description here" }));
     postDIv.appendChild(createElement("input", null, { id: "post-title", class: "post-input", placeholder: "Enter your title here", }));
     postDIv.appendChild(createElement("input", null, { id: "description", class: "post-input", placeholder: "Enter your description here", }));
     postDIv.appendChild(createElement("input", null, { id: "post-sub-seddit", class: "post-input", placeholder: "Enter your subseddit here", }));
     postDIv.appendChild(createElement("button", "Post", { class: "post-Bnt", id: "post-Bnt", style: "cursor:pointer" }));
-    // test for post button
     return postDIv;
 }
 
 
 function updateProfileGenerator() {
     let postDIv = createElement("div", null, { id: "profile-change-div", class: "post-to-db" })
-    // postDIv.appendChild(createElement("span", , { type: "file", class: "inputfile", id: "file_upload", placeholder: "Enter your description here" }));
     postDIv.appendChild(createElement("input", null, { id: "profile-email", class: "post-input", placeholder: "Enter your email here", }));
     postDIv.appendChild(createElement("input", null, { id: "profile-name", class: "post-input", placeholder: "Enter your name here", }));
     postDIv.appendChild(createElement("input", null, { id: "profile-password", class: "post-input", placeholder: "Enter your password here", }));
     postDIv.appendChild(createElement("button", "Change", { class: "post-Bnt", id: "profile-change-Bnt", style: "cursor:pointer" }));
-    // test for post button
     return postDIv;
 }
 
 function updatePostGenerator() {
     let postDIv = createElement("div", null, { id: "post-change-div", class: "post-to-db" })
-    // postDIv.appendChild(createElement("span", , { type: "file", class: "inputfile", id: "file_upload", placeholder: "Enter your description here" }));
     postDIv.appendChild(createElement("input", null, { id: "post-change-title", class: "post-input", placeholder: "change your title here", }));
     postDIv.appendChild(createElement("input", null, { id: "post-change-text", class: "post-input", placeholder: "change your description here", }));
     postDIv.appendChild(createElement("input", null, { id: "post-change-subseddit", class: "post-input", placeholder: "change subseddit here", }));
     postDIv.appendChild(createElement("input", null, { type: "file", id: "post-change-img", class: "post-input", placeholder: "change your imge here", }));
-    // postDIv.appendChild(createElement("button", "Change", { class: "post-Bnt", id: "post-change-Bnt", style: "cursor:pointer" }));
-    // test for post button
     return postDIv;
 }
 
@@ -937,6 +846,7 @@ function updatePostGenerator() {
 // user feed : 1
 // user post : 2
 function profileGenerator(res, option) {
+    upvoteCaculator(res.id)
     let profile = createElement("div", null, { id: "profile-" + res.id, class: "profile" })
     if (option === 2) {
         profile.appendChild(createElement("button", "Post", { class: "post-Bnt-1", id: "post-Bnt-1", style: "cursor:pointer" }));
@@ -947,10 +857,7 @@ function profileGenerator(res, option) {
     profile.appendChild(img_name_div)
     let profile_sub_div = createElement("div", null, { class: "profile-sub-div", id: "profile-sub-div" + res.id })
     profile_sub_div.appendChild(createElement("b", "Following: " + res.following.length, { class: "profile-following" }))
-
-    upvoteCaculator(res.id)
-
-    profile_sub_div.appendChild(createElement("b", "Upvotes: " + likenum, { class: "profile-upvotes" }))
+    profile_sub_div.appendChild(createElement("b", "Upvotes: " + checkLocalStore("likenum"), { class: "profile-upvotes" }))
     profile_sub_div.appendChild(createElement("b", "Followed: " + res.followed_num, { class: "profile-followed" }))
     profile_sub_div.appendChild(createElement("b", "Posts: " + res.posts.length, { class: "profile-posts" }))
     profile.appendChild(profile_sub_div);
@@ -958,10 +865,6 @@ function profileGenerator(res, option) {
 }
 
 //--------------------------------------------------------------------------------------------------------------
-
-
-
-
 
 
 
@@ -988,8 +891,8 @@ export function checkLocalStore(key) {
 }
 
 
-function time2time(Time) {
-    const unixTime = new Date(Time * 1000);
+function time2time(time) {
+    const unixTime = new Date(time * 1000);
     return unixTime.toLocaleString('en-AU');
 }
 
@@ -1008,12 +911,10 @@ export function createElement(tag, data, options = {}) {
 
 // ----------------------------------------total upvotes-----------------------------------------------------------
 
-// global var  only to caculate the total upvotes
-var likenum = 0;
-var nummm = 0;
-
-
-export async function upvoteCaculator(id) {
+export function upvoteCaculator(id) {
+    let likenum = 0;
+    let nummm = 0;
+    window.localStorage.setItem("likenum",0)
     var profile_url = "http://127.0.0.1:5000/user/"
 
     fetch(profile_url, {
@@ -1027,14 +928,14 @@ export async function upvoteCaculator(id) {
         .then(res => res.json())
         .then(function (res) {
             for (let i = 0; i < res.posts.length; i++) {
-                // console.log(res.posts[i])
-                getUpvoteNum(res.posts[i])
+                getUpvoteNum(res.posts[i],nummm)
                 likenum += nummm;
             }
+            window.localStorage.setItem("likenum",likenum)
         })
 }
 
-async function getUpvoteNum(id) {
+async function getUpvoteNum(id,nummm) {
     let thumbsup_url = "http://127.0.0.1:5000/post/?id=" + id;
     await fetch(thumbsup_url, {
         method: 'GET',
@@ -1045,26 +946,42 @@ async function getUpvoteNum(id) {
     })
         .then(res => res.json())
         .then(function (res) {
-            // console.log(res.meta.upvotes.length)
             nummm = res.meta.upvotes.length
         })
-
 }
 // ---------------------------------------------------------------------------------------------------
 
-//*************************************************************************** */
-export function searchHighlight(){
-document.getElementById("search").οnclick = function () {
-    // 获取关键词
-    alert("search")
-    var pattern = document.getElementById("search_input").value;
-    //定义正则表达式
-    var re = new RegExp(pattern, "g");
-    //获取操作文本对象
-    var searching = document.getElementById("incoming").value;
-    //给文本中的关键词添加样式
-    var resulting = searching.replace(re, "<span class='highLight'>$&</span>");
-    //将结果输出
-    document.getElementById("searchResult").innerHTML = resulting;
-}
+
+
+// --------------- generate feed -------------------------
+// not login feed show start feed 
+export function anonyFeed(flag = 0) {
+
+    let url = "http://127.0.0.1:5000/post/public"
+    fetch(url, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+        },
+    })
+        .then(res => res.json())
+        .then(res => {
+            const res2 = sortArray(res);
+            let feed = document.getElementById("feed");
+            for (let key in res2) {
+                feed.appendChild(createPageFeed(res.posts[res2[key]], flag));
+            }
+        })
+        .catch(
+            //if backend is not launched use feed.json 
+            fetch("../data/feed.json")
+                .then(res => res.json())
+                .then(res => {
+                    const res2 = sortArray(res);
+                    let feed = document.getElementById("feed");
+                    for (let key in res2) {
+                        feed.appendChild(createPageFeed(res.posts[res2[key]], 0));
+                    }
+                })
+        )
 }

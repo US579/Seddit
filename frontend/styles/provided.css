@@ -257,7 +257,7 @@ button:hover {
 .post-input{
  border-color: #66afe9;
     outline: 0;
-    width:100px;
+    width:192px;
 }
 .post-upvote{
   margin: 0;
@@ -293,16 +293,13 @@ button:hover {
   padding: 7.5px 15px;
   font-weight: bold;
   background-color: var(--reddit-blue);
-  /* margin-top: 5%; */
 
 }
 .comment_add_button{
   border: 1px solid var(--reddit-blue);
   border-radius: 4px;
-  /* display: inline; */
   text-transform: uppercase;
   padding:10px;
-  /* font-weight: bold; */
   background-color: var(--reddit-blue);
   margin-top: 5%;
   top: -5px;
@@ -329,8 +326,6 @@ button:hover {
 
 .post_count_num {
     display: inline;
-    /* padding: 8px 69px; */
-    margin-top: 0;
     font-size: 20px;
     font-family: Helvetica;
     color: goldenrod;
@@ -441,13 +436,12 @@ text-align:center;
 
 
 .post-to-db {
-  display: none; /* Hidden by default */
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
-  padding-top: 32px; /* Location of the box */
-  /* left: 0; */
+  display: none;
+  position: fixed; 
+  z-index: 1; 
+  padding-top: 32px; 
   top: 0;
-  overflow: auto; /* Enable scroll if needed */
+  overflow: auto; 
   background-color :gray
 }
 
@@ -467,6 +461,6 @@ text-align:center;
 
 .post-title-button{
   display: inline;
-  left: 80%;
+  left: 75%;
   position: relative;
 }
