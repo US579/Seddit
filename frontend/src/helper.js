@@ -4,7 +4,7 @@
 // 3 for signup
 export function addCloseListener(func, id1, id2) {
     if (func === 1) {
-        var close1 = document.getElementById(id1);
+        let close1 = document.getElementById(id1);
         close1.onclick = () => {
             document.getElementById(id2).style.display = "none";
             // refresh page
@@ -13,7 +13,7 @@ export function addCloseListener(func, id1, id2) {
     }
 
     if (func === 2) {
-        var onBut1 = document.getElementById("login_button");
+        let onBut1 = document.getElementById("login_button");
         const dc1 = document.getElementById('signup-01');
         onBut1.onclick = () => {
             if (dc1.style.display == "none") {
@@ -27,7 +27,7 @@ export function addCloseListener(func, id1, id2) {
     }
 
     if (func === 3) {
-        var onBut2 = document.getElementById("signup_button");
+        let onBut2 = document.getElementById("signup_button");
         const dc = document.getElementById('login-01');
         onBut2.onclick = () => {
             if (dc.style.display == "none") {
@@ -54,9 +54,9 @@ export function pgswitch(option = 0) {
 
 
 export function loginToBack() {
-    var signup_url = "http://127.0.0.1:5000/auth/login"
-    var username = document.getElementById('login-username').value;
-    var password = document.getElementById('login-password').value;
+    let signup_url = "http://127.0.0.1:5000/auth/login"
+    let username = document.getElementById('login-username').value;
+    let password = document.getElementById('login-password').value;
     if ((!username) || (!password)) {
         alert('username and password can not be empty');
         return false;
@@ -110,13 +110,18 @@ function hidebutton() {
 
 
 export function signupToBack() {
-    var signup_url = "http://127.0.0.1:5000/auth/signup"
-    var submit = document.getElementById("signup_submit");
+    let signup_url = "http://127.0.0.1:5000/auth/signup"
+    let submit = document.getElementById("signup_submit");
     submit.onclick = function () {
-        var username = document.getElementById('signup-username').value;
-        var password = document.getElementById('signup-password').value;
-        var email = document.getElementById('signup-email').value;
-        var name = document.getElementById('signup-name').value;
+        let username = document.getElementById('signup-username').value;
+        let password = document.getElementById('signup-password').value;
+        let name = document.getElementById('signup-name').value;
+        let email = document.getElementById('signup-email').value;
+        const pattern = /^[a-z0-9]+@[a-z0-9]+\.[a-z0-9]+$/i
+        if (email.search(pattern) === -1){
+            alert("email format is not correct")
+            return false;
+        }
         if ((!username) || (!password) || (!email) || (!name)) {
             alert('Input can not be empty');
             return false;
@@ -157,7 +162,7 @@ export function signupToBack() {
 
 //------------------------------------- display user feed when login  (cotains profiles)-------------------------------------
 export async function getUserFeed(token, option = 2) {
-    var profile_url = "http://127.0.0.1:5000/user/"
+    let profile_url = "http://127.0.0.1:5000/user/"
     await fetch(profile_url, {
         method: 'GET',
         headers: {
@@ -267,7 +272,6 @@ export function createPageFeed(post, option = 1) {
     section.appendChild(likeicon);
 
     section.appendChild(createElement('h6', post.meta.upvotes.length, { "data-id-upvotes": "", class: "post_count_num", id: "likes-num" + post.id }));
-
     const dislikeicon = createElement('img', null,
         { src: '/src/icon/down.png', alt: "dislike", class: 'post-button', style: "cursor:pointer" });
     dislikeicon.addEventListener('click', () => al(post.id))
@@ -296,7 +300,7 @@ export function createPageFeed(post, option = 1) {
     let upvote_button = createElement('img', null, { src: '/src/icon/upvote.png', alt: 'upvote', class: 'post-button', style: "cursor:pointer", id: "upvote-name-" + post.id })
     section.appendChild(upvote_button);
     // option for distinguish initial feed between user feed
-    if (option === 1) {
+    if (option === 3) {
         let upvote_tag = upvote_list(post.meta.upvotes, post.id);
         section.appendChild(upvote_tag)
         upvote_button.addEventListener('click', () => {
@@ -345,7 +349,7 @@ async function addListeningToeditBbutton(id) {
 
 function updatePost(id) {
     let file = document.getElementById("post-change-img").files[0];
-    var c_content ="";
+    let c_content ="";
     const validFileTypes = ['image/png']
     const validType = validFileTypes.find(type => type === file.type);
     if (!validType) {
@@ -355,11 +359,11 @@ function updatePost(id) {
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = function () {
-        var c_content = "";
+        let c_content = "";
         c_content = this.result.replace(/^data:image\/.*,/, '');
-        var c_title = document.getElementById("post-change-title").value;
-        var c_text = document.getElementById("post-change-text").value;
-        var c_subseddit = document.getElementById("post-change-subseddit").value;
+        let c_title = document.getElementById("post-change-title").value;
+        let c_text = document.getElementById("post-change-text").value;
+        let c_subseddit = document.getElementById("post-change-subseddit").value;
         if (!c_title) { c_title = document.getElementById("post-title-id" + id).innerText };
         if (!c_text) { c_text = document.getElementById("post-content-id" + id).innerText };
         if (!c_subseddit) { c_subseddit = document.getElementById("post-subseddit-id" + id).innerText };
@@ -412,6 +416,11 @@ export function updateProfile() {
     let password = document.getElementById("profile-password").value
     if (!email && !name && !password) {
         alert("At least on filed must be non empty ")
+        return false;
+    }
+    const pattern = /^[a-z0-9]+@[a-z0-9]+\.[a-z0-9]+$/i
+    if (email.search(pattern) === -1) {
+        alert("email format is not correct")
         return false;
     }
 
@@ -601,7 +610,6 @@ export function newPost() {
 }
 
 
-
 //sub function to request
 function post_request(content) {
     let post_url = "http://127.0.0.1:5000/post/";
@@ -667,7 +675,7 @@ async function addcomment(id) {
         .then(function (res) {
             // insert from here 
             let comment_div = document.getElementById("post-comments-div-" + id);
-            var myDate = new Date();
+            let myDate = new Date();
 
             if (checkLocalStore("token")) {
                 comment_div.insertBefore(createElement("h4", comments_content.value, { class: "post-comments-content", }), comment_div.firstChild);
@@ -764,8 +772,8 @@ function commentGenerator(id, comment) {
 
 //------------------------------------- display user post when login -------------------------------------
 export async function getUserPost(token) {
-    var profile_url = "http://127.0.0.1:5000/user/"
-    // var profile_url = "http://127.0.0.1:5000/user/?id=3"
+    let profile_url = "http://127.0.0.1:5000/user/"
+    // let profile_url = "http://127.0.0.1:5000/user/?id=3"
     await fetch(profile_url, {
         method: 'GET',
         headers: {
@@ -857,7 +865,8 @@ function profileGenerator(res, option) {
     profile.appendChild(img_name_div)
     let profile_sub_div = createElement("div", null, { class: "profile-sub-div", id: "profile-sub-div" + res.id })
     profile_sub_div.appendChild(createElement("b", "Following: " + res.following.length, { class: "profile-following" }))
-    profile_sub_div.appendChild(createElement("b", "Upvotes: " + checkLocalStore("likenum"), { class: "profile-upvotes" }))
+    profile_sub_div.appendChild(createElement("b", "Upvotes: ", { class: "profile-upvotes" }))
+    profile_sub_div.appendChild(createElement("span", 0, { id:"profile-upvotes",class: "profile-upvotes" }))
     profile_sub_div.appendChild(createElement("b", "Followed: " + res.followed_num, { class: "profile-followed" }))
     profile_sub_div.appendChild(createElement("b", "Posts: " + res.posts.length, { class: "profile-posts" }))
     profile.appendChild(profile_sub_div);
@@ -873,12 +882,12 @@ function profileGenerator(res, option) {
 
 // sort published 
 export function sortArray(res) {
-    var dic = {};
+    let dic = {};
     for (let i = 0; i < res.posts.length; ++i) {
         let published = res.posts[i].meta.published;
         dic[i] = parseInt(published);
     }
-    var res2 = Object.keys(dic).sort(function (a, b) { return dic[b] - dic[a]; });
+    let res2 = Object.keys(dic).sort(function (a, b) { return dic[b] - dic[a]; });
     return res2;
 }
 
@@ -912,10 +921,8 @@ export function createElement(tag, data, options = {}) {
 // ----------------------------------------total upvotes-----------------------------------------------------------
 
 export function upvoteCaculator(id) {
-    let likenum = 0;
-    let nummm = 0;
     window.localStorage.setItem("likenum",0)
-    var profile_url = "http://127.0.0.1:5000/user/"
+    let profile_url = "http://127.0.0.1:5000/user/"
 
     fetch(profile_url, {
         method: 'GET',
@@ -928,27 +935,23 @@ export function upvoteCaculator(id) {
         .then(res => res.json())
         .then(function (res) {
             for (let i = 0; i < res.posts.length; i++) {
-                getUpvoteNum(res.posts[i],nummm)
-                likenum += nummm;
+                let thumbsup_url = "http://127.0.0.1:5000/post/?id=" + res.posts[i];
+                fetch(thumbsup_url, {
+                    method: 'GET',
+                    headers: {
+                        "accept": "application/json",
+                        "Authorization": "Token " + checkLocalStore("token")
+                    }
+                })
+                    .then(res => res.json())
+                    .then(function (res) {
+                        let up = document.getElementById("profile-upvotes")
+                        up.innerText = parseInt(document.getElementById("profile-upvotes").innerText) + res.meta.upvotes.length ;
+                    })
             }
-            window.localStorage.setItem("likenum",likenum)
         })
 }
 
-async function getUpvoteNum(id,nummm) {
-    let thumbsup_url = "http://127.0.0.1:5000/post/?id=" + id;
-    await fetch(thumbsup_url, {
-        method: 'GET',
-        headers: {
-            "accept": "application/json",
-            "Authorization": "Token " + checkLocalStore("token")
-        }
-    })
-        .then(res => res.json())
-        .then(function (res) {
-            nummm = res.meta.upvotes.length
-        })
-}
 // ---------------------------------------------------------------------------------------------------
 
 
