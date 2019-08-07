@@ -300,7 +300,7 @@ export function createPageFeed(post, option = 1) {
     let upvote_button = createElement('img', null, { src: '/src/icon/upvote.png', alt: 'upvote', class: 'post-button', style: "cursor:pointer", id: "upvote-name-" + post.id })
     section.appendChild(upvote_button);
     // option for distinguish initial feed between user feed
-    if (option === 3) {
+    if (option === 3 || option === 1) {
         let upvote_tag = upvote_list(post.meta.upvotes, post.id);
         section.appendChild(upvote_tag)
         upvote_button.addEventListener('click', () => {
