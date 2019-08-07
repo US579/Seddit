@@ -311,7 +311,7 @@ export function createPageFeed(post, option = 1) {
             }
         });
     }
-
+    
     section.appendChild(createElement('h6', null, { class: "post-padding" }));
     section.appendChild(createElement("input", null, { class: "comment_add_input", placeholder: "Enter your comment here", id: "comment-add-input-" + post.id }))
 
