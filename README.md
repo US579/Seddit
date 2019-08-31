@@ -3,8 +3,14 @@
 -->
 ## how to run
 
+backend
 ```
-
+python3 backend/backend_server.py
+```
+frontend
+```
+cd frontend
+python3 frontend_server.py
 ```
 
 ## Seddit - Introduction
